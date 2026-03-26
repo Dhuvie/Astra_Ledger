@@ -1,36 +1,425 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Astra Ledger
 
-## Getting Started
+Astra Ledger is a premium personal finance dashboard built with Next.js, Prisma, PostgreSQL, Plaid, anime.js, and three.js.
 
-First, run the development server:
+It is designed to showcase:
+
+- Plaid sandbox and live-ready transaction ingestion
+- PostgreSQL-backed storage through Prisma
+- Budgeting, savings goals, recurring commitments, and scenario planning
+- Manual transaction entry and natural-language quick add
+- Motion-rich dashboard UI with anime.js and a pointer-reactive three.js backdrop
+- A fallback sample mode so the app still runs before live services are configured
+
+## What This Project Supports
+
+The app can run in two modes:
+
+1. Sample mode
+   - Uses bundled sample accounts and transactions for the core dashboard visuals
+   - Useful for design demos, local UI work, and quick bootstrapping
+2. Live mode
+   - Uses PostgreSQL + Prisma for app-owned data
+   - Uses Plaid for linked account balances and categorized transactions
+   - Recommended for staging and production
+
+Important:
+
+- Manual transactions, budgets, goals, and recurring items now use PostgreSQL whenever `DATABASE_URL` is configured.
+- If no database is configured, those app-owned records fall back to the local JSON workspace store for development/demo convenience.
+- For a real deployment, use PostgreSQL and set `USE_SAMPLE_DATA=false`.
+
+## Stack
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- Prisma
+- PostgreSQL
+- Plaid API
+- anime.js
+- three.js
+
+## Prerequisites
+
+Before you run the project, make sure you have:
+
+- Node.js 20 or newer
+- npm 10 or newer
+- PostgreSQL 15+ locally or a hosted PostgreSQL instance
+- Plaid sandbox credentials if you want live transaction sync
+
+## Environment Variables
+
+Copy the example file first:
+
+```bash
+cp .env.example .env
+```
+
+If you are on PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Available variables:
+
+| Variable | Required | Example | Purpose |
+| --- | --- | --- | --- |
+| `DATABASE_URL` | Yes for live mode | `postgresql://postgres:postgres@localhost:5432/astra_ledger?schema=public` | Prisma/PostgreSQL connection string |
+| `PLAID_CLIENT_ID` | Yes for Plaid sync | `...` | Plaid client id |
+| `PLAID_SECRET` | Yes for Plaid sync | `...` | Plaid secret |
+| `PLAID_ENV` | Recommended | `sandbox` | Plaid environment |
+| `PLAID_WEBHOOK_URL` | Optional | `https://your-app.com/api/plaid/webhook` | Reserved for webhook expansion |
+| `USE_SAMPLE_DATA` | Yes | `true` or `false` | Controls whether the dashboard uses sample or live account data |
+| `NODE_ENV` | Optional | `development` | Standard Node runtime flag |
+| `PORT` | Optional | `3000` | Local/server port |
+
+## Quick Start
+
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Start PostgreSQL
+
+If you already have PostgreSQL running locally, skip this step.
+
+One quick Docker option:
+
+```bash
+docker run --name astra-postgres ^
+  -e POSTGRES_PASSWORD=postgres ^
+  -e POSTGRES_DB=astra_ledger ^
+  -p 5432:5432 ^
+  -d postgres:16-alpine
+```
+
+On macOS/Linux shell, use:
+
+```bash
+docker run --name astra-postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=astra_ledger \
+  -p 5432:5432 \
+  -d postgres:16-alpine
+```
+
+### 3. Generate Prisma client
+
+```bash
+npm run prisma:generate
+```
+
+### 4. Create database tables
+
+For local development:
+
+```bash
+npm run db:push
+```
+
+### 5. Start the app
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- [http://localhost:3000](http://localhost:3000)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## How To Run It Locally
 
-## Learn More
+### Fastest UI-only path
 
-To learn more about Next.js, take a look at the following resources:
+Use this when you only want the finished interface and interactions:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Set `USE_SAMPLE_DATA=true`
+2. Leave Plaid credentials empty
+3. Start the app with `npm run dev`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+You will still get:
 
-## Deploy on Vercel
+- sample balances
+- sample transactions
+- dashboard animations
+- budgeting, goals, recurring items, and manual entry surfaces
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Full local live path
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Use this when you want the real database-backed setup:
+
+1. Set a working `DATABASE_URL`
+2. Run `npm run db:push`
+3. Set `USE_SAMPLE_DATA=false`
+4. Optionally add Plaid sandbox credentials
+5. Start with `npm run dev`
+
+### Full Plaid sandbox path
+
+1. Create a Plaid sandbox app in the Plaid dashboard
+2. Set:
+   - `PLAID_CLIENT_ID`
+   - `PLAID_SECRET`
+   - `PLAID_ENV=sandbox`
+3. Set a working `DATABASE_URL`
+4. Run:
+
+```bash
+npm run db:push
+npm run dev
+```
+
+5. Open the app
+6. Use the Plaid connect panel
+7. Link a sandbox institution
+
+Result:
+
+- Plaid accounts are written into PostgreSQL
+- Plaid transactions are written into PostgreSQL
+- Manual entries, goals, budgets, and recurring items also persist in PostgreSQL
+
+## Useful Scripts
+
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Starts Next.js in development mode |
+| `npm run build` | Creates the production build |
+| `npm run start` | Runs the compiled production app |
+| `npm run lint` | Runs ESLint |
+| `npm run prisma:generate` | Generates Prisma Client |
+| `npm run db:push` | Pushes the Prisma schema to the database |
+| `npm run db:migrate` | Creates and applies Prisma development migrations |
+| `npm run db:deploy` | Applies Prisma production migrations |
+
+## Production Deployment
+
+### Recommended production stack
+
+The cleanest production setup is:
+
+- Next.js app on Vercel, Render, Railway, Fly.io, or Docker/Kubernetes
+- PostgreSQL on Neon, Supabase, Railway, Render, RDS, or managed Postgres
+- Plaid in `development` or `production` mode
+
+### Production environment values
+
+At minimum, set:
+
+```env
+DATABASE_URL=postgresql://...
+USE_SAMPLE_DATA=false
+PLAID_CLIENT_ID=...
+PLAID_SECRET=...
+PLAID_ENV=development
+NODE_ENV=production
+```
+
+Use `PLAID_ENV=production` only when your Plaid account is approved for production access.
+
+### Vercel deployment
+
+1. Push this repository to GitHub/GitLab/Bitbucket
+2. Import the repo into Vercel
+3. Add all environment variables in the Vercel project settings
+4. Make sure `DATABASE_URL` points to your hosted PostgreSQL instance
+5. Run the schema bootstrap once against that database:
+
+```bash
+npm run db:push
+```
+
+6. Deploy
+
+Notes:
+
+- The app already builds successfully with `next build`
+- `postinstall` runs `prisma generate`, which helps hosted builds
+- `output: "standalone"` is enabled for container-friendly builds
+
+### Docker deployment
+
+This repo includes:
+
+- `Dockerfile`
+- `.dockerignore`
+
+Build the image:
+
+```bash
+docker build -t astra-ledger .
+```
+
+Run the container:
+
+```bash
+docker run --rm -p 3000:3000 --env-file .env astra-ledger
+```
+
+Before starting the production container, make sure the database schema already exists.
+
+For a first boot, run schema setup from your CI pipeline or a release step:
+
+```bash
+npm run db:push
+```
+
+If you adopt versioned Prisma migrations later, switch that release step to:
+
+```bash
+npm run db:deploy
+```
+
+## Health Check
+
+The app exposes a simple health route:
+
+- `GET /api/health`
+
+It reports:
+
+- overall status
+- current app mode
+- database readiness
+- Plaid configuration state
+
+This is useful for:
+
+- uptime monitors
+- container readiness checks
+- deployment verification
+
+## Production Readiness Checklist
+
+Before calling this production-ready, verify the following:
+
+- `USE_SAMPLE_DATA=false`
+- `DATABASE_URL` points to managed PostgreSQL
+- Plaid environment is correct for your account stage
+- `npm run build` passes
+- database schema has been applied
+- `/api/health` returns `200`
+- secrets are stored in your deployment provider, not in source control
+- logs and monitoring are enabled on your host
+
+## API Surface
+
+Current app routes:
+
+- `POST /api/plaid/create-link-token`
+- `POST /api/plaid/exchange-public-token`
+- `GET|POST|DELETE /api/manual-transactions`
+- `POST /api/quick-add`
+- `GET|POST /api/goals`
+- `GET|POST /api/budgets`
+- `GET /api/health`
+
+## Project Structure
+
+```text
+src/
+  app/
+    api/
+    page.tsx
+    globals.css
+  components/
+    dashboard-shell.tsx
+    plaid-connect.tsx
+    scene-backdrop.tsx
+    workspace-ui.tsx
+  lib/
+    dashboard.ts
+    finance.ts
+    goals.ts
+    budgets.ts
+    manual-transactions.ts
+    recurring-items.ts
+    quick-add.ts
+    db.ts
+    env.ts
+prisma/
+  schema.prisma
+Dockerfile
+.env.example
+```
+
+## Troubleshooting
+
+### The app opens but still shows demo data
+
+Check:
+
+- `USE_SAMPLE_DATA=false`
+- `DATABASE_URL` is set
+- PostgreSQL is reachable
+
+### Plaid button says config is missing
+
+Check:
+
+- `PLAID_CLIENT_ID`
+- `PLAID_SECRET`
+- `PLAID_ENV`
+
+### Prisma errors during startup
+
+Try:
+
+```bash
+npm run prisma:generate
+npm run db:push
+```
+
+### Deploy succeeds but persistence does not work
+
+Check:
+
+- the deployed app can reach PostgreSQL
+- `DATABASE_URL` is set in the hosting provider
+- you are not relying on local file storage in production
+
+### PowerShell shows `UNC paths are not supported` or `EISDIR: lstat 'C:'`
+
+This happens when PowerShell is running from a provider-qualified path like:
+
+```powershell
+PS Microsoft.PowerShell.Core\FileSystem::\\?\C:\project1>
+```
+
+`npm` uses `cmd.exe` for scripts on Windows, and `cmd.exe` does not like that path form.
+
+Use one of these fixes:
+
+1. Open a fresh terminal and switch to a normal drive path:
+
+```powershell
+Set-Location C:\project1
+npm run dev
+```
+
+2. If your shell still shows the `\\?\` path form, run through `cmd` explicitly:
+
+```powershell
+cmd /c "cd /d C:\project1 && npm run dev"
+```
+
+3. If you are launching from an editor terminal, open a new terminal rooted at plain `C:\project1` instead of the provider-qualified path.
+
+For local and production stability on Windows, prefer Node 20 LTS or Node 22 LTS.
+
+## Current State Of Production Support
+
+As of March 27, 2026:
+
+- the app builds cleanly for production
+- the production path stores app-owned finance workspace data in PostgreSQL when configured
+- Docker/standalone deployment is supported
+- health checks are available
+
+The main remaining hardening step for a larger real-world rollout would be adding versioned Prisma migrations to source control and plugging in centralized logging/monitoring.

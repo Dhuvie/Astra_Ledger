@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model PlaidItem {
+  id              String        @id @default(cuid())
+  itemId          String        @unique
+  accessToken     String
+  institutionName String?
+  cursor          String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  accounts        Account[]
+  transactions    Transaction[]
+}
+
+model Account {
+  id               String        @id @default(cuid())
+  plaidAccountId   String        @unique
+  plaidItemId      String?
+  plaidItem        PlaidItem?    @relation(fields: [plaidItemId], references: [id], onDelete: Cascade)
+  name             String
+  officialName     String?
+  type             String
+  subtype          String?
+  mask             String?
+  balanceCurrent   Float
+  balanceAvailable Float?
+  currencyCode     String        @default("USD")
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  transactions     Transaction[]
+}
+
+model Transaction {
+  id                      String     @id @default(cuid())
+  plaidTransactionId      String     @unique
+  plaidItemId             String?
+  plaidItem               PlaidItem? @relation(fields: [plaidItemId], references: [id], onDelete: Cascade)
+  accountId               String
+  account                 Account    @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  name                    String
+  merchantName            String?
+  amount                  Float
+  isoCurrencyCode         String     @default("USD")
+  date                    DateTime
+  authorizedDate          DateTime?
+  pending                 Boolean    @default(false)
+  isRecurring             Boolean    @default(false)
+  personalFinancePrimary  String?
+  personalFinanceDetailed String?
+  categoryConfidence      String?
+  createdAt               DateTime   @default(now())
+  updatedAt               DateTime   @updatedAt
+
+  @@index([date(sort: Desc)])
+  @@index([personalFinancePrimary])
+}
+
+model ManualTransaction {
+  id              String   @id @default(cuid())
+  name            String
+  merchantName    String?
+  amount          Float
+  date            DateTime
+  primaryCategory String
+  detailedCategory String?
+  confidence      String   @default("USER_ENTERED")
+  pending         Boolean  @default(false)
+  source          String   @default("manual")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([date(sort: Desc)])
+  @@index([primaryCategory])
+}
+
+model Goal {
+  id           String   @id @default(cuid())
+  name         String
+  targetAmount Float
+  currentAmount Float   @default(0)
+  targetDate   DateTime
+  category     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([targetDate])
+}
+
+model RecurringItem {
+  id        String   @id @default(cuid())
+  name      String
+  amount    Float
+  cadence   String
+  nextDate  DateTime
+  category  String
+  essential Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([nextDate])
+}
+
+model BudgetConfig {
+  id           String   @id @default(cuid())
+  category     String   @unique
+  monthlyLimit Float
+  accent       String   @default("mint")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
