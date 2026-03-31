@@ -1,14 +1,16 @@
-﻿import { DashboardShell } from "@/components/dashboard-shell";
+import { DashboardShell } from "@/components/dashboard-shell";
+import { isLiveDatabase } from "@/lib/db-availability";
 import { getDashboardData } from "@/lib/dashboard";
-import { isDatabaseConfigured, isPlaidConfigured } from "@/lib/env";
+import { env, isPlaidConfigured } from "@/lib/env";
 
 export default async function Home() {
-  const data = await getDashboardData();
+  const [data, dbLive] = await Promise.all([getDashboardData(), isLiveDatabase()]);
 
   return (
     <DashboardShell
       data={data}
-      canConnectPlaid={isPlaidConfigured && isDatabaseConfigured}
+      canConnectPlaid={isPlaidConfigured && dbLive}
+      allowDemoToggle={!dbLive && !env.useSampleData}
     />
   );
 }

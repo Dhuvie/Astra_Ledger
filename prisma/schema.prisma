@@ -3,12 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model PlaidItem {
-  id              String        @id @default(cuid())
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
   itemId          String        @unique
   accessToken     String
   institutionName String?
@@ -20,10 +20,10 @@ model PlaidItem {
 }
 
 model Account {
-  id               String        @id @default(cuid())
+  id               String        @id @default(auto()) @map("_id") @db.ObjectId
   plaidAccountId   String        @unique
-  plaidItemId      String?
-  plaidItem        PlaidItem?    @relation(fields: [plaidItemId], references: [id], onDelete: Cascade)
+  plaidItemId      String?       @db.ObjectId
+  plaidItem        PlaidItem?    @relation(fields: [plaidItemId], references: [id])
   name             String
   officialName     String?
   type             String
@@ -38,12 +38,12 @@ model Account {
 }
 
 model Transaction {
-  id                      String     @id @default(cuid())
+  id                      String     @id @default(auto()) @map("_id") @db.ObjectId
   plaidTransactionId      String     @unique
-  plaidItemId             String?
-  plaidItem               PlaidItem? @relation(fields: [plaidItemId], references: [id], onDelete: Cascade)
-  accountId               String
-  account                 Account    @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  plaidItemId             String?    @db.ObjectId
+  plaidItem               PlaidItem? @relation(fields: [plaidItemId], references: [id])
+  accountId               String     @db.ObjectId
+  account                 Account    @relation(fields: [accountId], references: [id])
   name                    String
   merchantName            String?
   amount                  Float
@@ -63,38 +63,38 @@ model Transaction {
 }
 
 model ManualTransaction {
-  id              String   @id @default(cuid())
-  name            String
-  merchantName    String?
-  amount          Float
-  date            DateTime
-  primaryCategory String
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  merchantName     String?
+  amount           Float
+  date             DateTime
+  primaryCategory  String
   detailedCategory String?
-  confidence      String   @default("USER_ENTERED")
-  pending         Boolean  @default(false)
-  source          String   @default("manual")
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  confidence       String   @default("USER_ENTERED")
+  pending          Boolean  @default(false)
+  source           String   @default("manual")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   @@index([date(sort: Desc)])
   @@index([primaryCategory])
 }
 
 model Goal {
-  id           String   @id @default(cuid())
-  name         String
-  targetAmount Float
-  currentAmount Float   @default(0)
-  targetDate   DateTime
-  category     String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  targetAmount  Float
+  currentAmount Float    @default(0)
+  targetDate    DateTime
+  category      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([targetDate])
 }
 
 model RecurringItem {
-  id        String   @id @default(cuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   amount    Float
   cadence   String
@@ -108,11 +108,10 @@ model RecurringItem {
 }
 
 model BudgetConfig {
-  id           String   @id @default(cuid())
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
   category     String   @unique
   monthlyLimit Float
   accent       String   @default("mint")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
-

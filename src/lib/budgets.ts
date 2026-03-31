@@ -1,7 +1,8 @@
 import { randomUUID } from "node:crypto";
 
 import { prisma } from "@/lib/db";
-import { isDatabaseConfigured } from "@/lib/env";
+import { isLiveDatabase } from "@/lib/db-availability";
+import { env } from "@/lib/env";
 import {
   defaultBudgets,
   readWorkspaceState,
@@ -16,8 +17,8 @@ export type BudgetInput = {
 };
 
 export async function listBudgets(): Promise<StoredBudget[]> {
-  if (isDatabaseConfigured) {
-    await ensureBudgetsSeeded();
+  if (await isLiveDatabase()) {
+    await ensureBudgetsSeededIfEnabled();
 
     const budgets = await prisma.budgetConfig.findMany({
       orderBy: {
@@ -38,7 +39,7 @@ export async function listBudgets(): Promise<StoredBudget[]> {
 }
 
 export async function createBudget(input: BudgetInput): Promise<StoredBudget> {
-  if (isDatabaseConfigured) {
+  if (await isLiveDatabase()) {
     const budget = await prisma.budgetConfig.upsert({
       where: {
         category: input.category.trim(),
@@ -80,7 +81,11 @@ export async function createBudget(input: BudgetInput): Promise<StoredBudget> {
   return budget;
 }
 
-async function ensureBudgetsSeeded() {
+async function ensureBudgetsSeededIfEnabled() {
+  if (!env.seedDemoWorkspace) {
+    return;
+  }
+
   const count = await prisma.budgetConfig.count();
 
   if (count > 0) {

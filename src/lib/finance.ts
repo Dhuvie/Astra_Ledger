@@ -133,6 +133,11 @@ export type DashboardData = {
   upcomingCharges: UpcomingCharge[];
   planner: PlannerSnapshot;
   quickAddExamples: string[];
+  /** UI: manual ledger mode (opening balance, demo stories, import). */
+  ledgerHints: {
+    demoMode: boolean;
+    openingBalance: number;
+  };
 };
 
 const CATEGORY_TONES = [
@@ -155,6 +160,7 @@ export function buildDashboardData(input: {
   goals?: StoredGoal[];
   recurringItems?: StoredRecurringItem[];
   manualEntryCount?: number;
+  ledgerHints?: { demoMode: boolean; openingBalance: number };
 }): DashboardData {
   const now = new Date();
   const orderedTransactions = [...input.transactions].sort((a, b) =>
@@ -342,6 +348,7 @@ export function buildDashboardData(input: {
       "received 85000 salary today",
       "spent 12000 on rent 2026-03-28",
     ],
+    ledgerHints: input.ledgerHints ?? { demoMode: false, openingBalance: 0 },
   };
 }
 
@@ -550,13 +557,31 @@ export function currency(value: number) {
   }).format(value);
 }
 
+const RUPEE = "\u20B9";
+
+/**
+ * Deterministic compact INR — avoids SSR/client hydration mismatches from
+ * `Intl` compact notation differing between Node and browsers.
+ */
 export function compactCurrency(value: number) {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    notation: "compact",
-    maximumFractionDigits: 1,
-  }).format(value);
+  const sign = value < 0 ? "-" : "";
+  const abs = Math.abs(value);
+
+  const fmt = (divisor: number, suffix: string) => {
+    const x = abs / divisor;
+    const rounded = x >= 100 ? Math.round(x) : Math.round(x * 10) / 10;
+    const text =
+      rounded % 1 === 0
+        ? String(Math.round(rounded))
+        : rounded.toFixed(1).replace(/\.0$/, "");
+    return `${sign}${RUPEE}${text}${suffix}`;
+  };
+
+  if (abs >= 1e12) return fmt(1e12, "T");
+  if (abs >= 1e9) return fmt(1e9, "B");
+  if (abs >= 1e6) return fmt(1e6, "M");
+  if (abs >= 1e3) return fmt(1e3, "K");
+  return `${sign}${RUPEE}${Math.round(abs)}`;
 }
 
 export function formatDate(value: string) {

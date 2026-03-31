@@ -1,6 +1,10 @@
+"use client";
+
 import type { CSSProperties, ReactNode } from "react";
 import CountUp from "react-countup";
+import { motion } from "framer-motion";
 
+import { springSnappy } from "@/components/motion-primitives";
 import { compactCurrency, currency, formatDate } from "@/lib/finance";
 
 export function SectionHeader({
@@ -15,10 +19,17 @@ export function SectionHeader({
   return (
     <div className="flex items-start justify-between gap-4">
       <div>
-        <p className="section-kicker">{kicker}</p>
-        <h2 className="mt-2 text-[1.75rem] font-semibold tracking-[-0.05em] text-white">
+        <motion.p className="section-kicker" initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={springSnappy}>
+          {kicker}
+        </motion.p>
+        <motion.h2
+          className="mt-2 text-lg font-medium tracking-[-0.03em] text-white sm:text-xl"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...springSnappy, delay: 0.04 }}
+        >
           {title}
-        </h2>
+        </motion.h2>
       </div>
       {right}
     </div>
@@ -34,16 +45,22 @@ export function HeroMetric({
   value?: number;
   valueString?: string;
 }) {
+  const hydrated = typeof window !== "undefined";
+
+  const abs = Math.abs(value ?? 0);
+
   return (
     <div data-chip className="hero-metric">
-      <div className="text-[10px] uppercase tracking-[0.24em] text-slate-500">{label}</div>
-      <div className="mt-3 text-[1.9rem] font-semibold tracking-[-0.06em] text-white">
+      <div className="text-[10px] uppercase tracking-[0.24em] text-white/40">{label}</div>
+      <div className="mt-3 text-[1.65rem] font-medium tracking-[-0.05em] text-white sm:text-[1.85rem]">
         {valueString ?? (
-          <CountUp
-            end={Math.abs(value ?? 0)}
-            duration={1.35}
-            formattingFn={(current) => currency(current)}
-          />
+          <div suppressHydrationWarning>
+            {hydrated ? (
+              <CountUp end={abs} duration={1.2} formattingFn={(current) => currency(current)} />
+            ) : (
+              <span>{currency(abs)}</span>
+            )}
+          </div>
         )}
       </div>
     </div>
@@ -53,8 +70,8 @@ export function HeroMetric({
 export function MetricPill({ label, value }: { label: string; value: string }) {
   return (
     <div data-chip className="meta-chip">
-      <span className="text-[10px] uppercase tracking-[0.22em] text-slate-500">{label}</span>
-      <span className="text-sm font-medium text-slate-100">{value}</span>
+      <span className="text-[10px] uppercase tracking-[0.2em] text-white/38">{label}</span>
+      <span className="text-sm font-medium tracking-tight text-white/90">{value}</span>
     </div>
   );
 }
@@ -70,17 +87,26 @@ export function ScoreDial({
 }) {
   return (
     <div className="score-dial">
-      <div
+      <motion.div
         className="score-ring"
         style={{ "--score": `${Math.max(0, Math.min(score, 100))}` } as CSSProperties}
+        initial={{ scale: 0.88, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 260, damping: 22 }}
       >
         <div className="score-core">
           <div className="text-[10px] uppercase tracking-[0.24em] text-slate-500">{label}</div>
-          <div className="mt-2 text-4xl font-semibold tracking-[-0.08em] text-white">
+          <motion.div
+            key={score}
+            className="mt-2 text-4xl font-semibold tracking-[-0.08em] text-white"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={springSnappy}
+          >
             {score}
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
       <p className="mt-4 text-sm leading-7 text-slate-400">{note}</p>
     </div>
   );
@@ -129,17 +155,20 @@ export function ToggleChip({
   onClick: () => void;
 }) {
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onClick}
       className={`rounded-full px-4 py-2 text-sm transition ${
         active
-          ? "bg-[#dffcf6] text-slate-950"
+          ? "bg-[#dffcf6] text-slate-950 shadow-[0_0_24px_rgba(125,212,194,0.25)]"
           : "border border-white/10 bg-white/5 text-slate-200"
       }`}
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.96 }}
+      layout
     >
       {children}
-    </button>
+    </motion.button>
   );
 }
 
@@ -209,7 +238,13 @@ export function BudgetCard({
         <div className="text-right text-sm text-slate-300">{Math.round(utilization * 100)}%</div>
       </div>
       <div className="budget-track mt-4">
-        <div data-meter className="budget-fill" />
+        <motion.div
+          className="budget-fill"
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          style={{ transformOrigin: "0% 50%" }}
+          transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+        />
       </div>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <MiniStat label="Spent" value={compactCurrency(spent)} />
@@ -252,10 +287,12 @@ export function GoalCard({
         <div className="text-sm text-slate-300">{Math.round(progress * 100)}%</div>
       </div>
       <div className="mt-3 h-2 rounded-full bg-white/6">
-        <div
-          data-meter
+        <motion.div
           className="h-2 rounded-full bg-[linear-gradient(90deg,#7dd4c2,#f8fafc)]"
-          style={{ width: `${Math.max(progress * 100, 6)}%` }}
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          style={{ width: `${Math.max(progress * 100, 6)}%`, transformOrigin: "0% 50%" }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         />
       </div>
       <div className="mt-3 grid gap-2 sm:grid-cols-2">

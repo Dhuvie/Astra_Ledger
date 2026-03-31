@@ -9,8 +9,9 @@ import {
   type TransactionsSyncResponse,
 } from "plaid";
 
+import { isLiveDatabase } from "@/lib/db-availability";
 import { prisma } from "@/lib/db";
-import { env, isDatabaseConfigured, isPlaidConfigured } from "@/lib/env";
+import { env, isPlaidConfigured } from "@/lib/env";
 
 const plaidEnvironmentMap: Record<string, string> = {
   sandbox: PlaidEnvironments.sandbox,
@@ -57,8 +58,10 @@ export async function exchangePublicTokenAndSync(input: {
   publicToken: string;
   institutionName?: string;
 }) {
-  if (!isDatabaseConfigured) {
-    throw new Error("DATABASE_URL is required to store Plaid data.");
+  if (!(await isLiveDatabase())) {
+    throw new Error(
+      "MongoDB must be reachable (DATABASE_URL). Or remove DATABASE_URL for file-only mode without Plaid sync.",
+    );
   }
 
   const client = getPlaidClient();

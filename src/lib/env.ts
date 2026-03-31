@@ -1,4 +1,4 @@
-﻿const parseBoolean = (value: string | undefined, fallback: boolean) => {
+const parseBoolean = (value: string | undefined, fallback: boolean) => {
   if (value === undefined) {
     return fallback;
   }
@@ -12,7 +12,9 @@ export const env = {
   plaidSecret: process.env.PLAID_SECRET ?? "",
   plaidEnv: process.env.PLAID_ENV ?? "sandbox",
   plaidWebhookUrl: process.env.PLAID_WEBHOOK_URL ?? "",
-  useSampleData: parseBoolean(process.env.USE_SAMPLE_DATA, true),
+  useSampleData: parseBoolean(process.env.USE_SAMPLE_DATA, false),
+  /** Seed MongoDB with demo goals/budgets/recurring when DB is empty (off = start empty). */
+  seedDemoWorkspace: parseBoolean(process.env.SEED_DEMO_WORKSPACE, false),
 };
 
 export const isDatabaseConfigured = Boolean(env.databaseUrl);

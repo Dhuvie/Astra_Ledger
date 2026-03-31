@@ -1,21 +1,16 @@
 import { NextResponse } from "next/server";
 
-import { prisma } from "@/lib/db";
+import { isLiveDatabase } from "@/lib/db-availability";
 import { env, isDatabaseConfigured, isPlaidConfigured } from "@/lib/env";
 
 export async function GET() {
-  let database = "not_configured";
+  let database: string = "not_configured";
 
   if (isDatabaseConfigured) {
-    try {
-      await prisma.$queryRaw`SELECT 1`;
-      database = "ok";
-    } catch {
-      database = "error";
-    }
+    database = (await isLiveDatabase()) ? "ok" : "unreachable";
   }
 
-  const ok = database !== "error";
+  const ok = database !== "unreachable";
 
   return NextResponse.json(
     {

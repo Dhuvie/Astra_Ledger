@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
-import { isDatabaseConfigured } from "@/lib/env";
+import { isLiveDatabase } from "@/lib/db-availability";
+import { env } from "@/lib/env";
 import {
   defaultRecurringItems,
   readWorkspaceState,
@@ -7,8 +8,8 @@ import {
 } from "@/lib/workspace-store";
 
 export async function listRecurringItems(): Promise<StoredRecurringItem[]> {
-  if (isDatabaseConfigured) {
-    await ensureRecurringItemsSeeded();
+  if (await isLiveDatabase()) {
+    await ensureRecurringItemsSeededIfEnabled();
 
     const items = await prisma.recurringItem.findMany({
       orderBy: {
@@ -31,7 +32,11 @@ export async function listRecurringItems(): Promise<StoredRecurringItem[]> {
   return state.recurringItems;
 }
 
-async function ensureRecurringItemsSeeded() {
+async function ensureRecurringItemsSeededIfEnabled() {
+  if (!env.seedDemoWorkspace) {
+    return;
+  }
+
   const count = await prisma.recurringItem.count();
 
   if (count > 0) {

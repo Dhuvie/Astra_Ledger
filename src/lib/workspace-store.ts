@@ -42,16 +42,19 @@ export type StoredBudget = {
 };
 
 export type WorkspaceState = {
-  version: 1;
+  version: 2;
   manualTransactions: StoredManualTransaction[];
   goals: StoredGoal[];
   recurringItems: StoredRecurringItem[];
   budgets: StoredBudget[];
+  /** Opening / manual cash balance (INR) when not using Plaid accounts. */
+  cashBalance: number;
 };
 
 const STORE_DIR = join(process.cwd(), "data");
 const STORE_PATH = join(STORE_DIR, "workspace-state.json");
 
+/** Optional packaged demo rows for “Load demo” stories — not loaded by default. */
 export const defaultGoals: StoredGoal[] = [
   {
     id: "goal_emergency",
@@ -69,14 +72,6 @@ export const defaultGoals: StoredGoal[] = [
     targetDate: "2026-09-01",
     category: "TRAVEL",
   },
-  {
-    id: "goal_investing",
-    name: "Annual Investing Base",
-    targetAmount: 240000,
-    currentAmount: 68000,
-    targetDate: "2026-12-01",
-    category: "INVESTING",
-  },
 ];
 
 export const defaultRecurringItems: StoredRecurringItem[] = [
@@ -89,33 +84,6 @@ export const defaultRecurringItems: StoredRecurringItem[] = [
     category: "HOUSING",
     essential: true,
   },
-  {
-    id: "rec_sip",
-    name: "SIP Transfer",
-    amount: 15000,
-    cadence: "monthly",
-    nextDate: "2026-04-05",
-    category: "INVESTING",
-    essential: false,
-  },
-  {
-    id: "rec_internet",
-    name: "Phone + Internet",
-    amount: 2400,
-    cadence: "monthly",
-    nextDate: "2026-04-07",
-    category: "UTILITIES",
-    essential: true,
-  },
-  {
-    id: "rec_insurance",
-    name: "Health Insurance",
-    amount: 18000,
-    cadence: "yearly",
-    nextDate: "2026-11-14",
-    category: "INSURANCE",
-    essential: true,
-  },
 ];
 
 export const defaultBudgets: StoredBudget[] = [
@@ -125,54 +93,40 @@ export const defaultBudgets: StoredBudget[] = [
     monthlyLimit: 22000,
     accent: "mint",
   },
-  {
-    id: "budget_transport",
-    category: "TRANSPORTATION",
-    monthlyLimit: 12000,
-    accent: "blue",
-  },
-  {
-    id: "budget_shopping",
-    category: "SHOPPING",
-    monthlyLimit: 18000,
-    accent: "gold",
-  },
-  {
-    id: "budget_entertainment",
-    category: "ENTERTAINMENT",
-    monthlyLimit: 9000,
-    accent: "rose",
-  },
 ];
 
 export const defaultWorkspaceState: WorkspaceState = {
-  version: 1,
+  version: 2,
   manualTransactions: [],
-  goals: defaultGoals,
-  recurringItems: defaultRecurringItems,
-  budgets: defaultBudgets,
+  goals: [],
+  recurringItems: [],
+  budgets: [],
+  cashBalance: 0,
 };
+
+function normalizeState(parsed: Partial<WorkspaceState> & { version?: number }): WorkspaceState {
+  return {
+    version: 2,
+    manualTransactions: Array.isArray(parsed.manualTransactions)
+      ? parsed.manualTransactions
+      : [],
+    goals: Array.isArray(parsed.goals) ? parsed.goals : [],
+    recurringItems: Array.isArray(parsed.recurringItems) ? parsed.recurringItems : [],
+    budgets: Array.isArray(parsed.budgets) ? parsed.budgets : [],
+    cashBalance:
+      typeof parsed.cashBalance === "number" && Number.isFinite(parsed.cashBalance)
+        ? parsed.cashBalance
+        : 0,
+  };
+}
 
 export async function readWorkspaceState(): Promise<WorkspaceState> {
   try {
     const content = await readFile(STORE_PATH, "utf8");
-    const parsed = JSON.parse(content) as Partial<WorkspaceState>;
-
-    return {
-      version: 1,
-      manualTransactions: Array.isArray(parsed.manualTransactions)
-        ? parsed.manualTransactions
-        : defaultWorkspaceState.manualTransactions,
-      goals: Array.isArray(parsed.goals) ? parsed.goals : defaultWorkspaceState.goals,
-      recurringItems: Array.isArray(parsed.recurringItems)
-        ? parsed.recurringItems
-        : defaultWorkspaceState.recurringItems,
-      budgets: Array.isArray(parsed.budgets)
-        ? parsed.budgets
-        : defaultWorkspaceState.budgets,
-    };
+    const parsed = JSON.parse(content) as Partial<WorkspaceState> & { version?: number };
+    return normalizeState(parsed);
   } catch {
-    return defaultWorkspaceState;
+    return { ...defaultWorkspaceState };
   }
 }
 
@@ -186,4 +140,16 @@ export async function updateWorkspaceState(
   await writeFile(STORE_PATH, JSON.stringify(next, null, 2), "utf8");
 
   return next;
+}
+
+export async function updateCashBalance(cashBalance: number) {
+  const next = Math.round(Number(cashBalance) * 100) / 100;
+  if (!Number.isFinite(next)) {
+    throw new Error("Invalid cash balance.");
+  }
+
+  return updateWorkspaceState((current) => ({
+    ...current,
+    cashBalance: next,
+  }));
 }

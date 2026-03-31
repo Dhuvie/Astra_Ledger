@@ -1,11 +1,11 @@
 # Astra Ledger
 
-Astra Ledger is a premium personal finance dashboard built with Next.js, Prisma, PostgreSQL, Plaid, anime.js, and three.js.
+Astra Ledger is a premium personal finance dashboard built with Next.js, Prisma, MongoDB, Plaid, and three.js.
 
 It is designed to showcase:
 
 - Plaid sandbox and live-ready transaction ingestion
-- PostgreSQL-backed storage through Prisma
+- MongoDB-backed storage through Prisma
 - Budgeting, savings goals, recurring commitments, and scenario planning
 - Manual transaction entry and natural-language quick add
 - Motion-rich dashboard UI with anime.js and a pointer-reactive three.js backdrop
@@ -19,15 +19,15 @@ The app can run in two modes:
    - Uses bundled sample accounts and transactions for the core dashboard visuals
    - Useful for design demos, local UI work, and quick bootstrapping
 2. Live mode
-   - Uses PostgreSQL + Prisma for app-owned data
+   - Uses MongoDB + Prisma for app-owned data
    - Uses Plaid for linked account balances and categorized transactions
    - Recommended for staging and production
 
 Important:
 
-- Manual transactions, budgets, goals, and recurring items now use PostgreSQL whenever `DATABASE_URL` is configured.
+- Manual transactions, budgets, goals, and recurring items use MongoDB whenever `DATABASE_URL` is configured and reachable.
 - If no database is configured, those app-owned records fall back to the local JSON workspace store for development/demo convenience.
-- For a real deployment, use PostgreSQL and set `USE_SAMPLE_DATA=false`.
+- For a real deployment, use MongoDB and set `USE_SAMPLE_DATA=false`.
 
 ## Stack
 
@@ -36,7 +36,7 @@ Important:
 - TypeScript
 - Tailwind CSS 4
 - Prisma
-- PostgreSQL
+- MongoDB
 - Plaid API
 - anime.js
 - three.js
@@ -47,7 +47,7 @@ Before you run the project, make sure you have:
 
 - Node.js 20 or newer
 - npm 10 or newer
-- PostgreSQL 15+ locally or a hosted PostgreSQL instance
+- MongoDB 6+ locally, Docker, or MongoDB Atlas
 - Plaid sandbox credentials if you want live transaction sync
 
 ## Environment Variables
@@ -68,7 +68,7 @@ Available variables:
 
 | Variable | Required | Example | Purpose |
 | --- | --- | --- | --- |
-| `DATABASE_URL` | Yes for live mode | `postgresql://postgres:postgres@localhost:5432/astra_ledger?schema=public` | Prisma/PostgreSQL connection string |
+| `DATABASE_URL` | Yes for live mode | `mongodb://127.0.0.1:27017/astra_ledger` or Atlas `mongodb+srv://...` | Prisma/MongoDB connection string (must start with `mongo`) |
 | `PLAID_CLIENT_ID` | Yes for Plaid sync | `...` | Plaid client id |
 | `PLAID_SECRET` | Yes for Plaid sync | `...` | Plaid secret |
 | `PLAID_ENV` | Recommended | `sandbox` | Plaid environment |
@@ -85,29 +85,23 @@ Available variables:
 npm install
 ```
 
-### 2. Start PostgreSQL
+### 2. Start MongoDB (optional if you use Atlas)
 
-If you already have PostgreSQL running locally, skip this step.
-
-One quick Docker option:
+Local Docker:
 
 ```bash
-docker run --name astra-postgres ^
-  -e POSTGRES_PASSWORD=postgres ^
-  -e POSTGRES_DB=astra_ledger ^
-  -p 5432:5432 ^
-  -d postgres:16-alpine
+docker run --name astra-mongo ^
+  -p 27017:27017 ^
+  -d mongo:7
 ```
 
-On macOS/Linux shell, use:
+macOS/Linux:
 
 ```bash
-docker run --name astra-postgres \
-  -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_DB=astra_ledger \
-  -p 5432:5432 \
-  -d postgres:16-alpine
+docker run --name astra-mongo -p 27017:27017 -d mongo:7
 ```
+
+Set `DATABASE_URL=mongodb://127.0.0.1:27017/astra_ledger` in `.env`.
 
 ### 3. Generate Prisma client
 
@@ -181,9 +175,9 @@ npm run dev
 
 Result:
 
-- Plaid accounts are written into PostgreSQL
-- Plaid transactions are written into PostgreSQL
-- Manual entries, goals, budgets, and recurring items also persist in PostgreSQL
+- Plaid accounts are written into MongoDB
+- Plaid transactions are written into MongoDB
+- Manual entries, goals, budgets, and recurring items also persist in MongoDB
 
 ## Useful Scripts
 
@@ -195,8 +189,8 @@ Result:
 | `npm run lint` | Runs ESLint |
 | `npm run prisma:generate` | Generates Prisma Client |
 | `npm run db:push` | Pushes the Prisma schema to the database |
-| `npm run db:migrate` | Creates and applies Prisma development migrations |
-| `npm run db:deploy` | Applies Prisma production migrations |
+| `npm run db:migrate` | Alias for `prisma db push` (MongoDB has no SQL migrations) |
+| `npm run db:deploy` | Same — push schema to MongoDB |
 
 ## Production Deployment
 
@@ -205,7 +199,7 @@ Result:
 The cleanest production setup is:
 
 - Next.js app on Vercel, Render, Railway, Fly.io, or Docker/Kubernetes
-- PostgreSQL on Neon, Supabase, Railway, Render, RDS, or managed Postgres
+- MongoDB Atlas, self-hosted MongoDB, or a managed MongoDB service your host provides
 - Plaid in `development` or `production` mode
 
 ### Production environment values
@@ -213,7 +207,7 @@ The cleanest production setup is:
 At minimum, set:
 
 ```env
-DATABASE_URL=postgresql://...
+DATABASE_URL=mongodb+srv://...   # or mongodb://... for self-hosted
 USE_SAMPLE_DATA=false
 PLAID_CLIENT_ID=...
 PLAID_SECRET=...
@@ -228,7 +222,7 @@ Use `PLAID_ENV=production` only when your Plaid account is approved for producti
 1. Push this repository to GitHub/GitLab/Bitbucket
 2. Import the repo into Vercel
 3. Add all environment variables in the Vercel project settings
-4. Make sure `DATABASE_URL` points to your hosted PostgreSQL instance
+4. Make sure `DATABASE_URL` points to your hosted MongoDB instance
 5. Run the schema bootstrap once against that database:
 
 ```bash
@@ -300,7 +294,7 @@ This is useful for:
 Before calling this production-ready, verify the following:
 
 - `USE_SAMPLE_DATA=false`
-- `DATABASE_URL` points to managed PostgreSQL
+- `DATABASE_URL` points to managed MongoDB (e.g. Atlas)
 - Plaid environment is correct for your account stage
 - `npm run build` passes
 - database schema has been applied
@@ -357,7 +351,7 @@ Check:
 
 - `USE_SAMPLE_DATA=false`
 - `DATABASE_URL` is set
-- PostgreSQL is reachable
+- MongoDB is reachable
 
 ### Plaid button says config is missing
 
@@ -380,7 +374,7 @@ npm run db:push
 
 Check:
 
-- the deployed app can reach PostgreSQL
+- the deployed app can reach MongoDB
 - `DATABASE_URL` is set in the hosting provider
 - you are not relying on local file storage in production
 
@@ -418,7 +412,7 @@ For local and production stability on Windows, prefer Node 20 LTS or Node 22 LTS
 As of March 27, 2026:
 
 - the app builds cleanly for production
-- the production path stores app-owned finance workspace data in PostgreSQL when configured
+- the production path stores app-owned finance workspace data in MongoDB when configured
 - Docker/standalone deployment is supported
 - health checks are available
 

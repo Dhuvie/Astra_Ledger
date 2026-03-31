@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 
 import type { DashboardTransaction } from "@/lib/finance";
 import { prisma } from "@/lib/db";
-import { isDatabaseConfigured } from "@/lib/env";
+import { isLiveDatabase } from "@/lib/db-availability";
 import {
   readWorkspaceState,
   updateWorkspaceState,
@@ -18,7 +18,7 @@ export type ManualTransactionInput = {
 };
 
 export async function listManualTransactions(): Promise<DashboardTransaction[]> {
-  if (isDatabaseConfigured) {
+  if (await isLiveDatabase()) {
     const transactions = await prisma.manualTransaction.findMany({
       orderBy: {
         date: "desc",
@@ -46,13 +46,25 @@ export async function listManualTransactions(): Promise<DashboardTransaction[]> 
     .map(mapStoredTransaction);
 }
 
+export async function createManualTransactionsBatch(
+  inputs: ManualTransactionInput[],
+): Promise<DashboardTransaction[]> {
+  const out: DashboardTransaction[] = [];
+
+  for (const input of inputs) {
+    out.push(await createManualTransaction(input));
+  }
+
+  return out;
+}
+
 export async function createManualTransaction(
   input: ManualTransactionInput,
 ): Promise<DashboardTransaction> {
   const normalizedName = input.name.trim();
   const detailedCategory = `${input.primaryCategory}_${input.amount > 0 ? "MANUAL_EXPENSE" : "MANUAL_INCOME"}`;
 
-  if (isDatabaseConfigured) {
+  if (await isLiveDatabase()) {
     const transaction = await prisma.manualTransaction.create({
       data: {
         name: normalizedName,
@@ -101,7 +113,7 @@ export async function createManualTransaction(
 }
 
 export async function clearManualTransactions() {
-  if (isDatabaseConfigured) {
+  if (await isLiveDatabase()) {
     await prisma.manualTransaction.deleteMany();
     return;
   }

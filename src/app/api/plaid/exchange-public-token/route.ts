@@ -1,14 +1,16 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 import { exchangePublicTokenAndSync } from "@/lib/plaid";
-import { isDatabaseConfigured, isPlaidConfigured } from "@/lib/env";
+import { isLiveDatabase } from "@/lib/db-availability";
+import { isPlaidConfigured } from "@/lib/env";
 
 export async function POST(request: Request) {
-  if (!isPlaidConfigured || !isDatabaseConfigured) {
+  const dbLive = await isLiveDatabase();
+  if (!isPlaidConfigured || !dbLive) {
     return NextResponse.json(
       {
         error:
-          "Plaid credentials and DATABASE_URL are both required for live synchronization.",
+          "Plaid credentials and a reachable MongoDB database are required for sync. Start MongoDB or clear DATABASE_URL for file-only mode.",
       },
       { status: 503 },
     );

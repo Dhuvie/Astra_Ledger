@@ -9,23 +9,25 @@
     "lint": "eslint",
     "prisma:generate": "prisma generate",
     "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev",
-    "db:deploy": "prisma migrate deploy",
+    "db:migrate": "prisma db push",
+    "db:deploy": "prisma db push",
     "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.18.0",
-    "animejs": "^4.3.6",
-    "claude": "^0.1.1",
+    "framer-motion": "^12.38.0",
+    "nano": "^11.0.4",
     "next": "16.2.1",
-    "pg": "^8.20.0",
     "plaid": "^41.4.0",
     "prisma": "^6.18.0",
     "react": "19.2.4",
     "react-countup": "^6.5.3",
     "react-dom": "19.2.4",
+    "react-markdown": "^10.1.0",
     "react-plaid-link": "^4.1.1",
-    "three": "^0.183.2"
+    "remark-gfm": "^4.0.1",
+    "three": "^0.183.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

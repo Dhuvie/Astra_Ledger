@@ -1,7 +1,8 @@
 import { randomUUID } from "node:crypto";
 
 import { prisma } from "@/lib/db";
-import { isDatabaseConfigured } from "@/lib/env";
+import { isLiveDatabase } from "@/lib/db-availability";
+import { env } from "@/lib/env";
 import {
   defaultGoals,
   readWorkspaceState,
@@ -18,8 +19,8 @@ export type GoalInput = {
 };
 
 export async function listGoals(): Promise<StoredGoal[]> {
-  if (isDatabaseConfigured) {
-    await ensureGoalsSeeded();
+  if (await isLiveDatabase()) {
+    await ensureGoalsSeededIfEnabled();
 
     const goals = await prisma.goal.findMany({
       orderBy: {
@@ -42,7 +43,7 @@ export async function listGoals(): Promise<StoredGoal[]> {
 }
 
 export async function createGoal(input: GoalInput): Promise<StoredGoal> {
-  if (isDatabaseConfigured) {
+  if (await isLiveDatabase()) {
     const goal = await prisma.goal.create({
       data: {
         name: input.name.trim(),
@@ -80,7 +81,11 @@ export async function createGoal(input: GoalInput): Promise<StoredGoal> {
   return goal;
 }
 
-async function ensureGoalsSeeded() {
+async function ensureGoalsSeededIfEnabled() {
+  if (!env.seedDemoWorkspace) {
+    return;
+  }
+
   const count = await prisma.goal.count();
 
   if (count > 0) {
