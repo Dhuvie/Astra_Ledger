@@ -1,419 +1,347 @@
 # Astra Ledger
 
-Astra Ledger is a premium personal finance dashboard built with Next.js, Prisma, MongoDB, Plaid, and three.js.
+Astra Ledger is an offline-first, hand-drawn financial sketchbook and personal finance command center built with Next.js 16 (Turbopack), TypeScript, Tailwind CSS 4, Framer Motion, and the TypeUI Doodle design system.
 
-It is designed to showcase:
+It merges the tactile charm of a physical bullet journal with advanced financial modeling: interactive scenario branching, anti-impulse cooling lockers, macroeconomic catastrophe stress tests, subscription leak sentinels, bill-splitting scratchpads with pencil strike-throughs, natural-language transaction entry, and an integrated AI copilot.
 
-- Plaid sandbox and live-ready transaction ingestion
-- MongoDB-backed storage through Prisma
-- Budgeting, savings goals, recurring commitments, and scenario planning
-- Manual transaction entry and natural-language quick add
-- Motion-rich dashboard UI with anime.js and a pointer-reactive three.js backdrop
-- A fallback sample mode so the app still runs before live services are configured
+---
 
-## What This Project Supports
+## Visual Previews and Browser Output Screenshots
 
-The app can run in two modes:
+The screenshots below are actual high-resolution browser captures from the live application running in local development.
 
-1. Sample mode
-   - Uses bundled sample accounts and transactions for the core dashboard visuals
-   - Useful for design demos, local UI work, and quick bootstrapping
-2. Live mode
-   - Uses MongoDB + Prisma for app-owned data
-   - Uses Plaid for linked account balances and categorized transactions
-   - Recommended for staging and production
+### 1. Financial Overview and Net Liquidity Notebook
 
-Important:
+![Astra Ledger Dashboard Overview](public/screenshots/overview.png)
 
-- Manual transactions, budgets, goals, and recurring items use MongoDB whenever `DATABASE_URL` is configured and reachable.
-- If no database is configured, those app-owned records fall back to the local JSON workspace store for development/demo convenience.
-- For a real deployment, use MongoDB and set `USE_SAMPLE_DATA=false`.
+Hand-drawn binder notebook dashboard featuring Net Liquidity metrics with punched margin binder rings, red margin notebook rule, monthly burn gauges, survival runway speedometer, and cashflow trajectory curves.
 
-## Stack
+---
 
-- Next.js 16
-- React 19
-- TypeScript
-- Tailwind CSS 4
-- Prisma
-- MongoDB
-- Plaid API
-- anime.js
-- three.js
+### 2. Astra Ledger and Filterable Journal
 
-## Prerequisites
+![Astra Ledger Transaction Journal](public/screenshots/ledger.png)
 
-Before you run the project, make sure you have:
+Complete transactional sketchbook with pencil search, hand-drawn category filter chips (Food & Drink, Housing, Entertainment, Shopping, Transportation, Income), tactile striped row cards, amount indicators, Scan Bill button, and batch Excel importer.
 
-- Node.js 20 or newer
-- npm 10 or newer
-- MongoDB 6+ locally, Docker, or MongoDB Atlas
-- Plaid sandbox credentials if you want live transaction sync
+---
 
-## Environment Variables
+### 3. Temporal Financial Time-Machine (Multiverse Branching)
 
-Copy the example file first:
+![What-If Multiverse Engine](public/screenshots/simulator.png)
 
-```bash
-cp .env.example .env
-```
+Interactive financial simulation engine. Model career pivots, side hustles, relocations, and capital investments across 12, 24, and 36 month horizons. Features dynamic compound yield curves, branch stacking, and live wealth divergence delta tracking against your baseline liquidity.
 
-If you are on PowerShell:
+---
 
-```powershell
-Copy-Item .env.example .env
-```
+### 4. The 72-Hour Anti-Impulse Quarantine Vault
 
-Available variables:
+![Quarantine Vault](public/screenshots/quarantine.png)
 
-| Variable | Required | Example | Purpose |
-| --- | --- | --- | --- |
-| `DATABASE_URL` | Yes for live mode | `mongodb://127.0.0.1:27017/astra_ledger` or Atlas `mongodb+srv://...` | Prisma/MongoDB connection string (must start with `mongo`) |
-| `PLAID_CLIENT_ID` | Yes for Plaid sync | `...` | Plaid client id |
-| `PLAID_SECRET` | Yes for Plaid sync | `...` | Plaid secret |
-| `PLAID_ENV` | Recommended | `sandbox` | Plaid environment |
-| `PLAID_WEBHOOK_URL` | Optional | `https://your-app.com/api/plaid/webhook` | Reserved for webhook expansion |
-| `USE_SAMPLE_DATA` | Yes | `true` or `false` | Controls whether the dashboard uses sample or live account data |
-| `NODE_ENV` | Optional | `development` | Standard Node runtime flag |
-| `PORT` | Optional | `3000` | Local/server port |
+Behavioral cooling-off holding locker for spontaneous purchases. Automatically translates item prices into finite hours of your life required to earn them based on your hourly wage. Features cooling countdown timers, a Dodged-Bullet trophy pool, and one-click conversion to ledger transactions.
 
-## Quick Start
+---
 
-### 1. Install dependencies
+### 5. Macroeconomic Crisis Stress-Test Engine
 
-```bash
-npm install
-```
+![Macro Crisis Stress Test](public/screenshots/crisis_stress_test.png)
 
-### 2. Start MongoDB (optional if you use Atlas)
+Defcon-rated macroeconomic catastrophe simulator. Test your liquidity against simultaneous income shocks (-50% job loss), runaway inflation surges (+30% hyperinflation), and sudden black swan medical bills. Includes a one-click Austerity Protocol to immediately freeze non-essential spending.
 
-Local Docker:
+---
 
-```bash
-docker run --name astra-mongo ^
-  -p 27017:27017 ^
-  -d mongo:7
-```
+### 6. Cashflow Leak Sentinel and Archetype Benchmarking
 
-macOS/Linux:
+![Financial Leak Audit](public/screenshots/audit.png)
 
-```bash
-docker run --name astra-mongo -p 27017:27017 -d mongo:7
-```
+Algorithmic audit sentinel analyzing weekend burn concentration, phantom micro-splurges (the coffee factor), and vampire recurring subscriptions. Benchmarks your net allocation against institutional models: 50/30/20 Classic, FIRE Movement, and Bootstrapper.
 
-Set `DATABASE_URL=mongodb://127.0.0.1:27017/astra_ledger` in `.env`.
+---
 
-### 3. Generate Prisma client
+### 7. Envelope Budgets and Astra Doodle Copilot
 
-```bash
-npm run prisma:generate
-```
+![Budgets and Astra Copilot](public/screenshots/budgets.png)
 
-### 4. Create database tables
+Category spending limits with daily pace tracking and overspend warnings alongside the Astra Doodle Copilot: an embedded AI financial assistant supporting Groq (free tier) and OpenAI for runway calculations and contextual recommendations.
 
-For local development:
+---
 
-```bash
-npm run db:push
-```
+### 8. Receipt Scratchpad and Interactive Splitter
 
-### 5. Start the app
+![Receipt Scratchpad and Splitter](public/screenshots/receipt_scanner.png)
 
-```bash
-npm run dev
-```
+Tactile paper receipt modal with simulated tape headers. Click any item on your grocery or dining receipt to apply a hand-drawn red pencil strike-through for shared meals or reimbursable items, instantly recalculating your net share to log to the ledger.
 
-Open:
+---
 
-- [http://localhost:3000](http://localhost:3000)
+### 9. Natural Language Smart Quick-Add
 
-## How To Run It Locally
+![Natural Language Quick-Add](public/screenshots/quick_add.png)
 
-### Fastest UI-only path
+Modal for lightning-fast expense recording. Type in everyday English (e.g., "Spent 420 on Coffee today" or "received 85000 salary today") and Astra parses the title, amount, category, and date automatically.
 
-Use this when you only want the finished interface and interactions:
+---
 
-1. Set `USE_SAMPLE_DATA=true`
-2. Leave Plaid credentials empty
-3. Start the app with `npm run dev`
+## Core Capabilities
 
-You will still get:
-
-- sample balances
-- sample transactions
-- dashboard animations
-- budgeting, goals, recurring items, and manual entry surfaces
-
-### Full local live path
-
-Use this when you want the real database-backed setup:
-
-1. Set a working `DATABASE_URL`
-2. Run `npm run db:push`
-3. Set `USE_SAMPLE_DATA=false`
-4. Optionally add Plaid sandbox credentials
-5. Start with `npm run dev`
-
-### Full Plaid sandbox path
-
-1. Create a Plaid sandbox app in the Plaid dashboard
-2. Set:
-   - `PLAID_CLIENT_ID`
-   - `PLAID_SECRET`
-   - `PLAID_ENV=sandbox`
-3. Set a working `DATABASE_URL`
-4. Run:
-
-```bash
-npm run db:push
-npm run dev
-```
-
-5. Open the app
-6. Use the Plaid connect panel
-7. Link a sandbox institution
-
-Result:
-
-- Plaid accounts are written into MongoDB
-- Plaid transactions are written into MongoDB
-- Manual entries, goals, budgets, and recurring items also persist in MongoDB
-
-## Useful Scripts
-
-| Command | What it does |
-| --- | --- |
-| `npm run dev` | Starts Next.js in development mode |
-| `npm run build` | Creates the production build |
-| `npm run start` | Runs the compiled production app |
-| `npm run lint` | Runs ESLint |
-| `npm run prisma:generate` | Generates Prisma Client |
-| `npm run db:push` | Pushes the Prisma schema to the database |
-| `npm run db:migrate` | Alias for `prisma db push` (MongoDB has no SQL migrations) |
-| `npm run db:deploy` | Same — push schema to MongoDB |
-
-## Production Deployment
-
-### Recommended production stack
-
-The cleanest production setup is:
-
-- Next.js app on Vercel, Render, Railway, Fly.io, or Docker/Kubernetes
-- MongoDB Atlas, self-hosted MongoDB, or a managed MongoDB service your host provides
-- Plaid in `development` or `production` mode
-
-### Production environment values
-
-At minimum, set:
-
-```env
-DATABASE_URL=mongodb+srv://...   # or mongodb://... for self-hosted
-USE_SAMPLE_DATA=false
-PLAID_CLIENT_ID=...
-PLAID_SECRET=...
-PLAID_ENV=development
-NODE_ENV=production
-```
-
-Use `PLAID_ENV=production` only when your Plaid account is approved for production access.
-
-### Vercel deployment
-
-1. Push this repository to GitHub/GitLab/Bitbucket
-2. Import the repo into Vercel
-3. Add all environment variables in the Vercel project settings
-4. Make sure `DATABASE_URL` points to your hosted MongoDB instance
-5. Run the schema bootstrap once against that database:
-
-```bash
-npm run db:push
-```
-
-6. Deploy
-
-Notes:
-
-- The app already builds successfully with `next build`
-- `postinstall` runs `prisma generate`, which helps hosted builds
-- `output: "standalone"` is enabled for container-friendly builds
-
-### Docker deployment
-
-This repo includes:
-
-- `Dockerfile`
-- `.dockerignore`
-
-Build the image:
-
-```bash
-docker build -t astra-ledger .
-```
-
-Run the container:
-
-```bash
-docker run --rm -p 3000:3000 --env-file .env astra-ledger
-```
-
-Before starting the production container, make sure the database schema already exists.
-
-For a first boot, run schema setup from your CI pipeline or a release step:
-
-```bash
-npm run db:push
-```
-
-If you adopt versioned Prisma migrations later, switch that release step to:
-
-```bash
-npm run db:deploy
-```
-
-## Health Check
-
-The app exposes a simple health route:
-
-- `GET /api/health`
-
-It reports:
-
-- overall status
-- current app mode
-- database readiness
-- Plaid configuration state
-
-This is useful for:
-
-- uptime monitors
-- container readiness checks
-- deployment verification
-
-## Production Readiness Checklist
-
-Before calling this production-ready, verify the following:
-
-- `USE_SAMPLE_DATA=false`
-- `DATABASE_URL` points to managed MongoDB (e.g. Atlas)
-- Plaid environment is correct for your account stage
-- `npm run build` passes
-- database schema has been applied
-- `/api/health` returns `200`
-- secrets are stored in your deployment provider, not in source control
-- logs and monitoring are enabled on your host
-
-## API Surface
-
-Current app routes:
-
-- `POST /api/plaid/create-link-token`
-- `POST /api/plaid/exchange-public-token`
-- `GET|POST|DELETE /api/manual-transactions`
-- `POST /api/quick-add`
-- `GET|POST /api/goals`
-- `GET|POST /api/budgets`
-- `GET /api/health`
+- **Hand-Drawn Tactile Design System**: Built with TypeUI Doodle design foundations: hand-crafted irregular border radii, notebook binder punch-holes, pink margin guidelines, graph-paper grid backdrops (28px), and tactile physical buttons with active press feedback.
+- **Dual Paper Themes**:
+  - **Light Sketchbook**: Clean cream paper (`#FBF9F4`) with deep navy ink outlines (`#263D5B`) and pencil graphite typography.
+  - **Dark Chalkboard**: Deep slate background (`#151922`) with doodle cyan borders (`#49B6E5`) and chalk-white text.
+- **Zero Gimmicks Architecture**: No resource-heavy 3D WebGL canvases, no cursor hijacking, and no synthetic audio chirps. 100% native browser responsiveness.
+- **Streamlined Command Header**: Minimalist 3-item right cluster (+ Add transaction, ... Tools dropdown, Theme toggle) keeping the notebook spacious and legible.
+- **Complete View Navigation**:
+  - **Overview (Key 1)**: Net liquidity, monthly inflow/outflow, runway speedometer, recent activity feed, and 6-month cashflow curves.
+  - **Trends (Key 2)**: Monthly cashflow trajectory splines, category share distribution, and top recipient entity leaderboards.
+  - **Budgets (Key 3)**: Category envelope ceilings with daily pace indicators and embedded Astra Copilot.
+  - **Goals (Key 4)**: Milestone targets with progress tracks, target dates, and celebratory confetti triggers.
+  - **Subscriptions (Key 5)**: Fixed obligation radar with an interactive pruning simulator showing runway extensions.
+  - **Ledger (Key 6)**: Filterable, searchable transaction journal with CSV export and Excel batch ingestion.
+  - **What-If Multiverse (Key 7)**: Scenario branching engine with timeline divergence calculations and compound growth yield dials.
+  - **Leak Audit Sentinel (Key 8)**: Diagnostic detector for weekend spending spikes, micro-spend accumulation, and vampire subscriptions.
+  - **Quarantine Vault (Key 9)**: 72-hour cooling locker with life-energy hourly rate calculators and saved trophy shelf.
+  - **Crisis Stress-Test (Key 0)**: Defcon catastrophe drill with macro shock dials and instant austerity toggles.
+- **Dual Persistence Engines**:
+  - **Zero-Config Local / Serverless**: Local JSON file workspace with automatic in-memory fallback for Vercel serverless deployments.
+  - **MongoDB with Prisma ORM**: Optional production database backend for multi-account syncing.
+- **Plaid Sandbox Integration**: Optional bank linking via Plaid Link for automated account balances and transaction categorization.
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+| :--- | :--- |
+| Framework | Next.js 16 (App Router, Turbopack) |
+| Language | TypeScript 5 |
+| Styling | Tailwind CSS 4, Vanilla CSS Design Tokens |
+| Design System | TypeUI Doodle (Hand-drawn SVG filters, doodle borders, washi tape) |
+| Typography | Delius Swash Caps (Display), Patrick Hand (Body & UI), JetBrains Mono (Numbers & Code) |
+| Motion | Framer Motion 12 |
+| Database & ORM | Prisma 6, MongoDB (Optional) |
+| Banking Sync | Plaid Node SDK, React Plaid Link (Optional) |
+| AI Copilot | Groq SDK (Llama 3.3 free tier) / OpenAI API (Optional) |
+| Spreadsheet Import | SheetJS (XLSX) |
+| Visual FX | Canvas Confetti |
+
+---
 
 ## Project Structure
 
 ```text
-src/
-  app/
-    api/
-    page.tsx
-    globals.css
-  components/
-    dashboard-shell.tsx
-    plaid-connect.tsx
-    scene-backdrop.tsx
-    workspace-ui.tsx
-  lib/
-    dashboard.ts
-    finance.ts
-    goals.ts
-    budgets.ts
-    manual-transactions.ts
-    recurring-items.ts
-    quick-add.ts
-    db.ts
-    env.ts
-prisma/
-  schema.prisma
-Dockerfile
-.env.example
+Astra_Ledger/
+├── data/                       # Local file-based workspace storage (fallback)
+├── prisma/
+│   └── schema.prisma           # Prisma schema for MongoDB (Plaid, accounts, transactions)
+├── public/
+│   └── screenshots/            # Real output browser screenshots (PNG)
+│       ├── overview.png
+│       ├── ledger.png
+│       ├── simulator.png
+│       ├── quarantine.png
+│       ├── crisis_stress_test.png
+│       ├── audit.png
+│       ├── budgets.png
+│       ├── analytics.png
+│       ├── receipt_scanner.png
+│       └── quick_add.png
+├── src/
+│   ├── app/
+│   │   ├── api/                # REST endpoints (transactions, budgets, goals, copilot, plaid)
+│   │   ├── globals.css         # TypeUI Doodle design tokens, fonts, and utilities
+│   │   ├── layout.tsx          # Root layout and Google Font preloads
+│   │   └── page.tsx            # Main server-rendered dashboard entrypoint
+│   ├── components/             # Hand-drawn UI modules
+│   │   ├── dashboard-shell.tsx # Main command bar, tab switcher, and balance modal
+│   │   ├── overview-tab.tsx    # Net worth, runway gauge, and activity feed
+│   │   ├── analytics-tab.tsx   # Cashflow splines, category breakdowns, and top payees
+│   │   ├── budgets-tab.tsx     # Monthly budget caps and burn indicators
+│   │   ├── goals-tab.tsx       # Milestone savings targets
+│   │   ├── recurring-tab.tsx   # Subscriptions and pruning simulator
+│   │   ├── ledger-tab.tsx      # Filterable transaction notebook
+│   │   ├── what-if-simulator.tsx # Multiverse scenario branching engine
+│   │   ├── financial-leak-audit.tsx # Sentinel audit for weekend burn and vampire subs
+│   │   ├── quarantine-vault.tsx # Anti-impulse 72-hour cooling locker
+│   │   ├── stress-test-drawer.tsx # Macroeconomic crisis sandbox
+│   │   ├── receipt-scanner-modal.tsx # Scratchpad bill splitter with pencil lines
+│   │   ├── quick-add-modal.tsx # Natural-language transaction entry
+│   │   ├── finance-chat-panel.tsx # Floating Doodle Copilot drawer
+│   │   ├── depth-hero.tsx      # Notebook binder cover with punch-holes and margin rule
+│   │   └── theme-toggle.tsx    # Light/Dark mode switcher
+│   └── lib/                    # Business logic, calculations, and database clients
+│       ├── dashboard.ts        # Aggregated metrics and sample dataset
+│       ├── finance.ts          # Currency formatters and calculations
+│       ├── workspace-store.ts  # File-based and serverless memory persistence
+│       └── db.ts               # Prisma MongoDB singleton client
+├── vercel.json                 # Vercel deployment configuration
+├── package.json
+└── README.md
 ```
 
-## Troubleshooting
+---
 
-### The app opens but still shows demo data
+## Keyboard Shortcuts
 
-Check:
+Navigate Astra Ledger with physical keyboard commands:
 
-- `USE_SAMPLE_DATA=false`
-- `DATABASE_URL` is set
-- MongoDB is reachable
+| Key | Action |
+| :--- | :--- |
+| `1` | Open Overview Tab (Net Liquidity, Runway, Recent Activity) |
+| `2` | Open Trends Tab (Cashflow Splines, Category Breakdown) |
+| `3` | Open Budgets Tab (Envelopes, Spending Caps, Astra Copilot) |
+| `4` | Open Goals Tab (Milestone Targets, Celebrations) |
+| `5` | Open Subscriptions Tab (Recurring Radar, Pruning Simulator) |
+| `6` | Open Ledger Tab (Full Searchable Transaction Journal) |
+| `7` | Open What-If Multiverse Engine (Branching Scenarios) |
+| `8` | Open Financial Leak Audit Sentinel (Weekend Burn, Coffee Factor) |
+| `9` | Open Impulse Quarantine Locker (Cooling Timers, Life-Energy) |
+| `0` | Open Macroeconomic Crisis Stress-Test Drawer |
+| `Ctrl + K` or `N` | Open Smart Quick-Add Transaction Modal |
+| `R` | Open Receipt Scratchpad and Bill Splitter |
+| `T` | Toggle Theme (Light Sketchbook / Dark Chalkboard) |
+| `D` | Toggle Demo Mode (Sample Data / Blank Slate) |
+| `?` | Open Keyboard Shortcuts Reference Modal |
+| `Esc` | Close Active Modal, Dropdown, or Drawer |
 
-### Plaid button says config is missing
+---
 
-Check:
+## Getting Started
 
-- `PLAID_CLIENT_ID`
-- `PLAID_SECRET`
-- `PLAID_ENV`
+### 1. Prerequisites
 
-### Prisma errors during startup
+- Node.js 20.x or newer
+- npm 10.x or newer
 
-Try:
+### 2. Installation
+
+Clone the repository and install dependencies:
 
 ```bash
-npm run prisma:generate
-npm run db:push
+git clone https://github.com/Dhuvie/Astra_Ledger.git
+cd Astra_Ledger
+npm install
 ```
 
-### Deploy succeeds but persistence does not work
+### 3. Environment Configuration
 
-Check:
+Copy the example environment file:
 
-- the deployed app can reach MongoDB
-- `DATABASE_URL` is set in the hosting provider
-- you are not relying on local file storage in production
-
-### PowerShell shows `UNC paths are not supported` or `EISDIR: lstat 'C:'`
-
-This happens when PowerShell is running from a provider-qualified path like:
-
-```powershell
-PS Microsoft.PowerShell.Core\FileSystem::\\?\C:\project1>
+```bash
+cp .env.example .env.local
 ```
 
-`npm` uses `cmd.exe` for scripts on Windows, and `cmd.exe` does not like that path form.
-
-Use one of these fixes:
-
-1. Open a fresh terminal and switch to a normal drive path:
+On Windows PowerShell:
 
 ```powershell
-Set-Location C:\project1
+Copy-Item .env.example .env.local
+```
+
+Astra Ledger runs out of the box with zero required environment variables. To enable optional live services, configure:
+
+```env
+# Optional: MongoDB connection string for persistent multi-account database
+DATABASE_URL="mongodb+srv://<user>:<password>@cluster.mongodb.net/astra_ledger?retryWrites=true&w=majority"
+
+# Optional: Plaid Sandbox credentials (from https://dashboard.plaid.com)
+PLAID_CLIENT_ID="your_plaid_client_id"
+PLAID_SECRET="your_plaid_secret"
+PLAID_ENV="sandbox"
+
+# Optional: Free Groq AI key for Astra Copilot (from https://console.groq.com)
+GROQ_API_KEY="your_groq_api_key"
+```
+
+### 4. Running Locally
+
+Start the development server with Turbopack:
+
+```bash
 npm run dev
 ```
 
-2. If your shell still shows the `\\?\` path form, run through `cmd` explicitly:
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-```powershell
-cmd /c "cd /d C:\project1 && npm run dev"
+---
+
+## Deploying to Vercel
+
+Astra Ledger includes dedicated Vercel deployment arrangements configured in `vercel.json` and `src/lib/workspace-store.ts`.
+
+### Option A: Deploy via Vercel Dashboard (Recommended)
+
+1. Push your repository to GitHub, GitLab, or Bitbucket.
+2. Log in to [Vercel](https://vercel.com) and click **Add New** > **Project**.
+3. Import your `Astra_Ledger` repository.
+4. Vercel automatically detects the Next.js framework preset.
+5. In **Environment Variables**, add any optional keys:
+   - `GROQ_API_KEY`: Recommended for free AI copilot functionality.
+   - `DATABASE_URL`: Optional MongoDB Atlas connection string. If omitted, Astra runs in zero-setup memory mode.
+   - `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_ENV`: Optional for bank linking.
+6. Click **Deploy**.
+
+### Option B: Deploy via Vercel CLI
+
+Install the Vercel CLI and deploy directly from your terminal:
+
+```bash
+# Install Vercel CLI globally
+npm install -g vercel
+
+# Log in to Vercel
+vercel login
+
+# Preview deployment
+vercel
+
+# Production deployment
+vercel --prod
 ```
 
-3. If you are launching from an editor terminal, open a new terminal rooted at plain `C:\project1` instead of the provider-qualified path.
+### Serverless Architecture Details
 
-For local and production stability on Windows, prefer Node 20 LTS or Node 22 LTS.
+- **Prisma Client Generation**: The `vercel.json` build step runs `prisma generate && next build` automatically.
+- **Serverless Storage Handling**: When running on Vercel (`process.env.VERCEL`), local storage calls route through `/tmp/astra-data` with an in-memory state cache to ensure API routes never crash due to read-only filesystem restrictions.
+- **Instant Demo Mode**: If no database is connected, users can click "Load Sample" in the top bar tools menu to explore realistic sample transactions, goals, and budgets immediately.
 
-## Current State Of Production Support
+---
 
-As of March 27, 2026:
+## API Specification
 
-- the app builds cleanly for production
-- the production path stores app-owned finance workspace data in MongoDB when configured
-- Docker/standalone deployment is supported
-- health checks are available
+Astra Ledger exposes a clean set of REST API endpoints:
 
-The main remaining hardening step for a larger real-world rollout would be adding versioned Prisma migrations to source control and plugging in centralized logging/monitoring.
+| Endpoint | Method | Description |
+| :--- | :--- | :--- |
+| `/api/health` | GET | Health check returning status, database connectivity, and environment mode |
+| `/api/quick-add` | POST | Parses natural language strings into structured financial transactions |
+| `/api/manual-transactions/batch` | POST | Ingests spreadsheet rows (XLSX, CSV) into the transaction ledger |
+| `/api/budgets` | POST | Creates or updates monthly budget ceilings |
+| `/api/goals` | POST / PATCH | Creates new savings goals or contributes funds to an existing goal |
+| `/api/workspace/cash-balance` | POST | Sets the base manual opening cash balance |
+| `/api/preferences` | POST | Updates application preferences (currency, demo mode, display settings) |
+| `/api/finance-chat` | POST | Conversational AI copilot query endpoint (Groq / OpenAI) |
+| `/api/finance-chat/status` | GET | Returns AI copilot availability and model provider status |
+| `/api/plaid/create-link-token` | POST | Initializes a Plaid Link token for sandbox bank authentication |
+| `/api/plaid/exchange-public-token` | POST | Exchanges public tokens and fetches initial balances and transactions |
+
+---
+
+## Verification and Testing
+
+Run the following test commands to verify application integrity:
+
+```bash
+# TypeScript type check
+npx tsc --noEmit
+
+# Production Turbopack build
+npm run build
+
+# Start production server
+npm run start
+```
+
+---
+
+## License
+
+MIT License. Free for personal and commercial use.

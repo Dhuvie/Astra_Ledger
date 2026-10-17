@@ -3,8 +3,8 @@ import { DM_Sans, JetBrains_Mono } from "next/font/google";
 
 import "./globals.css";
 
-import { ImmersiveChrome } from "@/components/immersive-chrome";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ToastProvider } from "@/components/doodle-toast";
 
 const sans = DM_Sans({
   subsets: ["latin"],
@@ -19,9 +19,9 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Astra Ledger",
+  title: "Astra Ledger · Hand-Drawn Financial Sketchbook",
   description:
-    "A cinematic personal finance dashboard with Plaid sandbox integration, transaction categorization, and spending insights.",
+    "A hand-drawn, sketch-inspired personal finance notebook powered by TypeUI Doodle design system.",
 };
 
 const themeInitScript = `
@@ -54,7 +54,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col font-sans bg-[var(--background)] text-[var(--foreground)]">
         <ThemeProvider>
-          <ImmersiveChrome>{children}</ImmersiveChrome>
+          <ToastProvider>
+            {children}
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>

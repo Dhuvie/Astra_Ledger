@@ -1,11 +1,35 @@
 import { NextResponse } from "next/server";
 
-import { createGoal, listGoals } from "@/lib/goals";
+import { createGoal, listGoals, contributeToGoal } from "@/lib/goals";
 
 export async function GET() {
   const goals = await listGoals();
 
   return NextResponse.json({ goals });
+}
+
+export async function PATCH(request: Request) {
+  try {
+    const body = (await request.json()) as { id?: string; amount?: number };
+    const id = body.id?.trim();
+    const amount = Number(body.amount);
+
+    if (!id || !Number.isFinite(amount) || amount <= 0) {
+      return NextResponse.json({ error: "Invalid contribution payload." }, { status: 400 });
+    }
+
+    const updated = await contributeToGoal(id, amount);
+    if (!updated) {
+      return NextResponse.json({ error: "Goal not found." }, { status: 404 });
+    }
+
+    return NextResponse.json({ goal: updated }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Unable to contribute to goal." },
+      { status: 500 },
+    );
+  }
 }
 
 export async function POST(request: Request) {

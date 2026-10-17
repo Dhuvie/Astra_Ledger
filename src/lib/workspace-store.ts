@@ -51,10 +51,15 @@ export type WorkspaceState = {
   cashBalance: number;
 };
 
-const STORE_DIR = join(process.cwd(), "data");
+const STORE_DIR = process.env.VERCEL
+  ? join("/tmp", "astra-data")
+  : join(process.cwd(), "data");
 const STORE_PATH = join(STORE_DIR, "workspace-state.json");
+const BUNDLED_PATH = join(process.cwd(), "data", "workspace-state.json");
 
-/** Optional packaged demo rows for “Load demo” stories — not loaded by default. */
+let memoryCache: WorkspaceState | null = null;
+
+/** Optional packaged demo rows for "Load demo" stories - not loaded by default. */
 export const defaultGoals: StoredGoal[] = [
   {
     id: "goal_emergency",
@@ -121,12 +126,25 @@ function normalizeState(parsed: Partial<WorkspaceState> & { version?: number }):
 }
 
 export async function readWorkspaceState(): Promise<WorkspaceState> {
+  if (memoryCache) {
+    return memoryCache;
+  }
   try {
     const content = await readFile(STORE_PATH, "utf8");
     const parsed = JSON.parse(content) as Partial<WorkspaceState> & { version?: number };
-    return normalizeState(parsed);
+    memoryCache = normalizeState(parsed);
+    return memoryCache;
   } catch {
-    return { ...defaultWorkspaceState };
+    // If on Vercel and /tmp doesn't have it yet, try reading from bundled repository path
+    try {
+      const content = await readFile(BUNDLED_PATH, "utf8");
+      const parsed = JSON.parse(content) as Partial<WorkspaceState> & { version?: number };
+      memoryCache = normalizeState(parsed);
+      return memoryCache;
+    } catch {
+      memoryCache = { ...defaultWorkspaceState };
+      return memoryCache;
+    }
   }
 }
 
@@ -135,9 +153,15 @@ export async function updateWorkspaceState(
 ) {
   const current = await readWorkspaceState();
   const next = updater(current);
+  memoryCache = next;
 
-  await mkdir(STORE_DIR, { recursive: true });
-  await writeFile(STORE_PATH, JSON.stringify(next, null, 2), "utf8");
+  try {
+    await mkdir(STORE_DIR, { recursive: true });
+    await writeFile(STORE_PATH, JSON.stringify(next, null, 2), "utf8");
+  } catch (err) {
+    // In restricted read-only serverless environments, state remains consistent in memory cache
+    console.warn("[Astra] Notice: Workspace storage write deferred to memory:", err);
+  }
 
   return next;
 }

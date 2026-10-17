@@ -145,7 +145,7 @@ export function FinanceChatPanel() {
         parseSseDeltas(buffer, append);
       }
     } catch {
-      setError("Network error.");
+      setError("Network error. Try again.");
       setMessages((m) => m.filter((x) => x.id !== assistantId));
     } finally {
       setSending(false);
@@ -154,89 +154,127 @@ export function FinanceChatPanel() {
 
   return (
     <>
-      <motion.button
-        type="button"
-        aria-label="Open finance copilot"
-        onClick={() => setOpen((o) => !o)}
-        className="fixed bottom-6 right-6 z-[90] flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-[var(--accent)] bg-[var(--surface)] text-xl text-[var(--accent)] shadow-[var(--shadow-lg)] transition hover:bg-[var(--surface-2)]"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.96 }}
-      >
-        <span className="select-none">✦</span>
-      </motion.button>
+      {/* Floating launcher trigger - only shown when chat panel is closed */}
+      {!open && (
+        <button
+          type="button"
+          aria-label="Open finance copilot"
+          onClick={() => setOpen(true)}
+          className="doodle-btn doodle-btn-primary fixed bottom-6 right-6 z-[90] flex h-14 w-14 items-center justify-center p-0 text-2xl shadow-[3px_3px_0px_var(--border)]"
+        >
+          <span className="select-none font-display text-2xl">✎</span>
+        </button>
+      )}
 
       <AnimatePresence>
         {open ? (
           <motion.div
-            className="fixed bottom-24 right-6 z-[90] flex w-[min(100vw-2rem,420px)] flex-col overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] shadow-[var(--shadow-lg)]"
+            className="doodle-card fixed bottom-6 right-6 z-[95] flex w-[min(100vw-2rem,430px)] flex-col overflow-hidden p-0 shadow-2xl"
             initial={{ opacity: 0, y: 16, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.98 }}
             transition={{ type: "spring", stiffness: 320, damping: 30 }}
           >
-            <div className="border-b border-[var(--border)] bg-[var(--surface-2)] px-5 py-4">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[var(--accent)]">
-                Astra copilot
+            <div className="doodle-tape doodle-tape-green -top-3 left-6" />
+            <div
+              className="doodle-tape doodle-tape-dots -top-3 right-6"
+              style={{ transform: "rotate(4deg)" }}
+            />
+
+            {/* Header */}
+            <div className="border-b-2 border-dashed border-[var(--border-soft)] bg-[var(--surface-2)] px-5 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-base font-bold text-[var(--color-primary)] font-display">✎</span>
+                  <p className="text-sm font-bold uppercase tracking-wider text-[var(--foreground)] font-display">
+                    Astra Doodle Copilot
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="doodle-btn h-7 w-7 p-0 text-xs flex items-center justify-center rounded-full"
+                  aria-label="Close copilot"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <p className="mt-1 text-xs text-[var(--muted)] font-hand">
+                Tools + live ledger context every send. Markdown answers.
               </p>
-              <p className="mt-1 text-sm text-[var(--muted)]">
-                Tools + live ledger context every send. Markdown answers. Free tier: Groq.
-              </p>
+
               {providerLabel ? (
-                <p className="mt-1 text-[10px] uppercase tracking-[0.15em] text-[var(--muted-2)]">
+                <p className="mt-1 text-[10px] uppercase font-mono font-bold text-[var(--color-secondary)]">
                   {providerLabel}
                 </p>
               ) : null}
+
               {enabled === false ? (
-                <p className="mt-2 text-xs text-amber-700 dark:text-amber-300">
-                  Set <code className="rounded border border-[var(--border)] bg-[var(--surface)] px-1">GROQ_API_KEY</code>{" "}
+                <div className="mt-2.5 rounded-xl border border-dashed border-[var(--color-warning)] bg-[var(--color-warning)]/15 px-3 py-2 text-xs text-[var(--foreground)] font-hand">
+                  Set <code className="doodle-badge font-mono text-[10px] bg-[var(--surface)] font-bold text-[var(--foreground)]">GROQ_API_KEY</code>{" "}
                   (free at console.groq.com) or{" "}
-                  <code className="rounded border border-[var(--border)] bg-[var(--surface)] px-1">OPENAI_API_KEY</code>.
-                </p>
+                  <code className="doodle-badge font-mono text-[10px] bg-[var(--surface)] font-bold text-[var(--foreground)]">OPENAI_API_KEY</code>.
+                </div>
               ) : null}
             </div>
 
-            <div ref={listRef} className="max-h-[min(52vh,420px)] space-y-3 overflow-y-auto px-4 py-4">
+            {/* Messages Body */}
+            <div ref={listRef} className="max-h-[min(48vh,380px)] min-h-[160px] space-y-3 overflow-y-auto px-4 py-4 font-hand">
               {messages.length === 0 ? (
-                <p className="text-sm text-[var(--muted)]">
-                  Ask about runway, categories, budgets, what changed this month, or how to improve
-                  savings rate. Optional: describe what section you are looking at below.
-                </p>
+                <div className="space-y-2 text-sm font-hand text-[var(--muted)]">
+                  <p className="font-medium text-[var(--foreground)]">
+                    ✎ Ask about runway, sketch categories, budgets, what changed this month, or how to improve savings pace.
+                  </p>
+                  {enabled === false && (
+                    <p className="text-xs text-[var(--muted-2)] font-mono">
+                      Add GROQ_API_KEY (free) or OPENAI_API_KEY on the server to enable chat.
+                    </p>
+                  )}
+                </div>
               ) : null}
+
               {messages.map((m) => (
                 <div
                   key={m.id}
-                  className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-                    m.role === "user"
-                      ? "ms-6 border-2 border-[var(--accent)] bg-[var(--surface-2)] text-[var(--foreground)]"
-                      : "me-4 border border-[var(--border)] bg-[var(--surface-2)] text-[var(--foreground)]"
-                  }`}
+                  className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
                 >
-                  <p className="mb-1 text-[9px] uppercase tracking-[0.2em] text-[var(--muted-2)]">
-                    {m.role === "user" ? "You" : "Copilot"}
-                  </p>
-                  {m.role === "assistant" ? (
-                    <FinanceAssistantMarkdown content={m.content} />
-                  ) : (
-                    <div className="whitespace-pre-wrap break-words">{m.content}</div>
-                  )}
+                  <div
+                    className={`max-w-[85%] px-4 py-2.5 text-sm font-bold leading-relaxed ${
+                      m.role === "user" ? "doodle-bubble-user" : "doodle-bubble-copilot"
+                    }`}
+                  >
+                    <p className="mb-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--muted)] font-mono">
+                      {m.role === "user" ? "You" : "✎ Copilot"}
+                    </p>
+                    {m.role === "assistant" ? (
+                      <FinanceAssistantMarkdown content={m.content} />
+                    ) : (
+                      <div className="whitespace-pre-wrap break-words">{m.content}</div>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
 
-            {error ? <p className="px-4 pb-2 text-xs text-red-600 dark:text-red-400">{error}</p> : null}
+            {error ? (
+              <p className="px-4 pb-2 text-xs font-bold text-[var(--color-danger)] font-hand">{error}</p>
+            ) : null}
 
-            <div className="space-y-2 border-t border-[var(--border)] bg-[var(--surface-2)] p-4">
+            {/* Inputs & Controls */}
+            <div className="space-y-2.5 border-t-2 border-dashed border-[var(--border-soft)] bg-[var(--surface-2)] p-4 font-hand">
               <input
                 type="text"
                 placeholder="Optional: what you see on screen (section name…)"
                 value={hint}
                 onChange={(e) => setHint(e.target.value)}
-                className="w-full rounded-xl border border-[var(--border)] bg-[var(--input-bg)] px-3 py-2 text-xs text-[var(--foreground)] outline-none placeholder:text-[var(--muted-2)] focus:border-[var(--accent)]"
+                className="doodle-input w-full text-xs"
               />
-              <div className="flex gap-2">
+
+              <div className="flex gap-2 items-end">
                 <textarea
                   rows={2}
-                  placeholder="Ask anything about your finances…"
+                  placeholder="Ask anything about your sketch finances…"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => {
@@ -245,15 +283,16 @@ export function FinanceChatPanel() {
                       void send();
                     }
                   }}
-                  className="min-h-[44px] flex-1 resize-none rounded-xl border border-[var(--border)] bg-[var(--input-bg)] px-3 py-2 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted-2)] focus:border-[var(--accent)]"
+                  className="doodle-input min-h-[48px] flex-1 resize-none text-sm font-hand"
                 />
+
                 <button
                   type="button"
                   disabled={sending || !input.trim()}
                   onClick={() => void send()}
-                  className="shrink-0 self-end rounded-xl bg-[var(--accent)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--accent-ink)] disabled:opacity-35"
+                  className="doodle-btn shrink-0 bg-[#49B6E5] text-[#1A3644] h-[48px] px-5 text-sm font-black shadow-[2px_2px_0px_var(--border)] disabled:opacity-40"
                 >
-                  Send
+                  <span>Send</span>
                 </button>
               </div>
             </div>

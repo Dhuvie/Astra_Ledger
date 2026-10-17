@@ -1,6 +1,7 @@
 "use client";
 
 import { useTheme } from "@/components/theme-provider";
+import { Sun, Moon } from "lucide-react";
 
 export function ThemeToggle() {
   const { toggleTheme } = useTheme();
@@ -9,12 +10,15 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={toggleTheme}
-      data-cursor="active"
-      className="astra-glass-chip rounded-full px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.22em] text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
-      aria-label="Toggle theme"
+      className="doodle-btn flex h-9 w-9 items-center justify-center p-0"
+      aria-label="Toggle notebook theme"
     >
-      <span className="theme-toggle-light">Light</span>
-      <span className="theme-toggle-dark">Dark</span>
+      <span className="theme-toggle-light">
+        <Sun className="h-4 w-4" />
+      </span>
+      <span className="theme-toggle-dark">
+        <Moon className="h-4 w-4" />
+      </span>
     </button>
   );
 }

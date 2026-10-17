@@ -26,26 +26,25 @@ function applyClass(theme: Theme) {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(() => {
-    if (typeof window === "undefined") {
-      return "dark";
-    }
+  const [theme, setThemeState] = useState<Theme>("dark");
+
+  useEffect(() => {
     try {
       const stored = localStorage.getItem("astra-theme") as Theme | null;
       if (stored === "light" || stored === "dark") {
-        return stored;
+        setThemeState(stored);
+        applyClass(stored);
+        return;
       }
     } catch {
       /* ignore */
     }
 
     const prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
-    return prefersLight ? "light" : "dark";
-  });
-
-  useEffect(() => {
-    applyClass(theme);
-  }, [theme]);
+    const initialTheme: Theme = prefersLight ? "light" : "dark";
+    setThemeState(initialTheme);
+    applyClass(initialTheme);
+  }, []);
 
   const setTheme = useCallback((t: Theme) => {
     setThemeState(t);

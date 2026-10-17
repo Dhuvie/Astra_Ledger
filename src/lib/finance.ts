@@ -560,7 +560,7 @@ export function currency(value: number) {
 const RUPEE = "\u20B9";
 
 /**
- * Deterministic compact INR — avoids SSR/client hydration mismatches from
+ * Deterministic compact INR - avoids SSR/client hydration mismatches from
  * `Intl` compact notation differing between Node and browsers.
  */
 export function compactCurrency(value: number) {

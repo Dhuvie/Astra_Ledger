@@ -81,6 +81,38 @@ export async function createGoal(input: GoalInput): Promise<StoredGoal> {
   return goal;
 }
 
+export async function contributeToGoal(id: string, amount: number): Promise<StoredGoal | null> {
+  if (await isLiveDatabase()) {
+    const existing = await prisma.goal.findUnique({ where: { id } });
+    if (!existing) return null;
+    const updated = await prisma.goal.update({
+      where: { id },
+      data: { currentAmount: Math.max(0, existing.currentAmount + amount) },
+    });
+    return {
+      id: updated.id,
+      name: updated.name,
+      targetAmount: updated.targetAmount,
+      currentAmount: updated.currentAmount,
+      targetDate: updated.targetDate.toISOString().slice(0, 10),
+      category: updated.category,
+    };
+  }
+
+  let result: StoredGoal | null = null;
+  await updateWorkspaceState((current) => {
+    const goals = current.goals.map((g) => {
+      if (g.id === id) {
+        result = { ...g, currentAmount: Math.max(0, g.currentAmount + amount) };
+        return result;
+      }
+      return g;
+    });
+    return { ...current, goals };
+  });
+  return result;
+}
+
 async function ensureGoalsSeededIfEnabled() {
   if (!env.seedDemoWorkspace) {
     return;
