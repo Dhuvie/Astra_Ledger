@@ -37,8 +37,10 @@ export const metadata: Metadata = {
 const themeInitScript = `
 (function(){
   try {
+    var p = new URLSearchParams(window.location.search);
+    var t = p.get('theme');
     var k = 'astra-theme';
-    var s = localStorage.getItem(k);
+    var s = (t === 'light' || t === 'dark') ? t : localStorage.getItem(k);
     var d = document.documentElement;
     d.classList.remove('light','dark');
     if (s === 'light' || s === 'dark') { d.classList.add(s); }

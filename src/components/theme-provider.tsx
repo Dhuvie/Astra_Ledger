@@ -30,6 +30,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     try {
+      const p = new URLSearchParams(window.location.search);
+      const urlTheme = p.get("theme") as Theme | null;
+      if (urlTheme === "light" || urlTheme === "dark") {
+        setThemeState(urlTheme);
+        applyClass(urlTheme);
+        return;
+      }
       const stored = localStorage.getItem("astra-theme") as Theme | null;
       if (stored === "light" || stored === "dark") {
         setThemeState(stored);
