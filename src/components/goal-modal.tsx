@@ -171,7 +171,7 @@ export function GoalModal({
                 </div>
                 <div>
                   <h3 className="text-xl font-bold font-serif text-[var(--foreground)]">
-                    {contributeGoal ? "✎ Contribute to Goal" : "✎ Create Savings Goal"}
+                    {contributeGoal ? "✎ Contribute to Astra Goal" : "✎ Create Astra Savings Goal"}
                   </h3>
                   <p className="text-xs font-serif text-[var(--muted)]">
                     {contributeGoal ? contributeGoal.name : "Track milestone targets and celebrate progress"}

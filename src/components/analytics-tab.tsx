@@ -32,6 +32,16 @@ export function AnalyticsTab({ data }: AnalyticsTabProps) {
 
   return (
     <div className="space-y-8">
+      {/* Top Header: Astra Trends */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-1">
+        <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-[var(--foreground)] font-display">
+          Astra Trends
+        </h2>
+        <span className="text-xs text-[var(--muted)] font-mono hidden sm:inline-block">
+          Interactive Cashflow Trajectory & Outflow Matrix
+        </span>
+      </div>
+
       {/* Interactive Main Chart */}
       <InteractiveChart trend={data.trend} />
 

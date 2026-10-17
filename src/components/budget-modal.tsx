@@ -121,7 +121,7 @@ export function BudgetModal({
                 </div>
                 <div>
                   <h3 className="text-xl font-bold font-serif text-[var(--foreground)]">
-                    ✎ Budget Sentinel
+                    ✎ Astra Budget Sentinel
                   </h3>
                   <p className="text-xs font-serif text-[var(--muted)]">Configure monthly spending limits</p>
                 </div>

@@ -72,7 +72,7 @@ export function RecurringTab({
               </span>
             </div>
             <h3 className="mt-1 text-2xl sm:text-3xl font-black tracking-tight text-[var(--foreground)] font-serif">
-              Subscriptions & Fixed Obligations
+              Astra Subscriptions & Commitments
             </h3>
             <p className="mt-1 text-sm text-[var(--muted)] font-sans">
               Tracking {recurringItems.length} active recurring commitments · {currency(monthlyTotal)}/mo run rate

@@ -475,9 +475,9 @@ export function DashboardShell({
               style={{ borderRadius: "20px 14px 18px 16px / 16px 18px 14px 20px" }}
             >
               {/* Brand Logo & Subtle Sandbox Indicator */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5">
                 <span className="font-display text-2xl font-black tracking-tight text-[var(--foreground)]">
-                  // DOODLE
+                  Astra Ledger
                 </span>
                 <span className="hidden sm:inline-flex items-center gap-1.5 font-mono text-[10px] uppercase font-bold text-[var(--color-primary)] bg-[var(--surface-2)] px-2.5 py-0.5 rounded-full border border-[var(--border)]">
                   <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-primary)] animate-pulse" />
@@ -787,6 +787,11 @@ export function DashboardShell({
             <div className="mb-10">
               <DepthHero>
                 <div className="flex flex-col items-start justify-center text-left py-2">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-mono text-xs uppercase tracking-widest text-[var(--muted)] font-bold">
+                      Astra Ledger · Wealth Command Sketchbook
+                    </span>
+                  </div>
                   <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-[var(--foreground)] font-display">
                     Net Liquidity
                   </h2>
@@ -951,6 +956,17 @@ export function DashboardShell({
             <div className="mt-14 max-w-xl mx-auto text-center">
               <PlaidConnect />
             </div>
+
+            {/* Astra Ledger Footer */}
+            <footer className="mt-16 pt-8 border-t border-dashed border-[var(--border)] text-center text-xs font-hand text-[var(--muted)] flex flex-col sm:flex-row items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="font-display font-bold text-sm text-[var(--foreground)]">Astra Ledger</span>
+                <span>· Hand-Drawn Personal Finance Command Center</span>
+              </div>
+              <div className="font-mono text-[11px]">
+                TypeUI Doodle System · Offline-First
+              </div>
+            </footer>
           </main>
 
           {/* Clean Functional Modals */}

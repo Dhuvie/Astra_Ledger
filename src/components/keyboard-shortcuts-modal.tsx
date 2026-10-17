@@ -44,9 +44,9 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
                 </div>
                 <div>
                   <h3 className="text-lg font-bold tracking-tight text-[var(--foreground)]">
-                    Keyboard Shortcuts
+                    Astra Ledger Shortcuts
                   </h3>
-                  <p className="text-xs text-[var(--muted-2)]">Doodle fast navigation</p>
+                  <p className="text-xs text-[var(--muted-2)]">Fast sketchbook navigation</p>
                 </div>
               </div>
 

@@ -50,6 +50,19 @@ export function OverviewTab({
 
   return (
     <div className="space-y-8 font-hand">
+      {/* Top Header: Astra Overview */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-1">
+        <div className="flex items-center gap-2.5">
+          <Wallet className="h-7 w-7 text-[var(--color-primary)]" />
+          <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-[var(--foreground)] font-display">
+            Astra Overview
+          </h2>
+        </div>
+        <p className="text-xs text-[var(--muted)] font-mono">
+          Interactive Cashflow Trajectory & Runway Pulse
+        </p>
+      </div>
+
       {/* 4 Doodle Metric Cards strictly matching Image 1 */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {/* Card 1: Monthly Inflow */}

@@ -236,7 +236,7 @@ export function QuarantineVault({ data, onRefresh }: QuarantineVaultProps) {
             </div>
 
             <h3 className="text-2xl sm:text-3xl font-black font-display text-[var(--foreground)] tracking-tight">
-              The 72-Hour Cooling-Off Vault
+              Astra 72-Hour Cooling-Off Vault
             </h3>
 
             <p className="text-sm text-[var(--muted)] leading-relaxed">

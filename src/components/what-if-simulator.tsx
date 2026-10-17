@@ -305,7 +305,7 @@ export function WhatIfSimulator({ data }: WhatIfSimulatorProps) {
               </span>
             </div>
             <h3 className="mt-1 text-2xl sm:text-3xl font-black tracking-tight text-[var(--foreground)] font-display">
-              Temporal Financial Time-Machine
+              Astra Multiverse Time-Machine
             </h3>
             <p className="mt-1 text-sm text-[var(--muted)] font-hand">
               Model branching lifepaths, career pivots, and major capital investments against your active baseline liquidity.

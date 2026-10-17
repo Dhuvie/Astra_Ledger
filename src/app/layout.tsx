@@ -19,9 +19,19 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Astra Ledger · Hand-Drawn Financial Sketchbook",
+  title: "Astra Ledger",
   description:
     "A hand-drawn, sketch-inspired personal finance notebook powered by TypeUI Doodle design system.",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [
+      { url: "/icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
 };
 
 const themeInitScript = `

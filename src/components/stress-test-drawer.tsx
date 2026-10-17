@@ -172,7 +172,7 @@ export function StressTestDrawer({ data, isOpen, onClose }: StressTestDrawerProp
                   </span>
                 </div>
                 <h3 className="text-xl font-bold font-serif text-[var(--foreground)]">
-                  Macro Crisis & Windfall Sandbox
+                  Astra Macro Crisis & Stress Sandbox
                 </h3>
               </div>
             </div>

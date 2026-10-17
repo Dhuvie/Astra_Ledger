@@ -191,7 +191,7 @@ export function ReceiptScannerModal({
               </div>
               <div>
                 <h3 className="text-xl font-bold font-display text-[var(--foreground)]">
-                  Receipt Scratchpad & Splitter
+                  Astra Receipt & Bill Scratchpad
                 </h3>
                 <p className="text-xs text-[var(--muted)] font-hand">
                   Scratch out items you are splitting or reimbursing with a doodle strike-through.

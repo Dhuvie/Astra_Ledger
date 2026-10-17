@@ -170,7 +170,7 @@ export function FinancialLeakAudit({ data, onOpenBudgetModal }: FinancialLeakAud
               </span>
             </div>
             <h3 className="mt-1 text-2xl sm:text-3xl font-black tracking-tight text-[var(--foreground)] font-display">
-              Hidden Financial Leak Audit
+              Astra Financial Leak Audit
             </h3>
             <p className="mt-1 text-sm text-[var(--muted)] font-hand">
               Algorithmic diagnostic scanning transactions for vampire subscriptions, weekend burn surges, and phantom micro-splurges.

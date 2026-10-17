@@ -30,7 +30,7 @@ export function GoalsTab({ goals, onOpenCreateGoal, onOpenContribute }: GoalsTab
               </span>
             </div>
             <h3 className="mt-1 text-2xl sm:text-3xl font-black tracking-tight text-[var(--foreground)] font-serif">
-              Sketch Savings Goals
+              Astra Savings Goals
             </h3>
             <p className="mt-1 text-sm text-[var(--muted)] font-sans">
               Accumulated {currency(totalSaved)} across {goals.length} target sketch trajectories

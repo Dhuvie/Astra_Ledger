@@ -186,9 +186,9 @@ export function QuickAddModal({ isOpen, onClose, onSuccess, quickExamples = [] }
                 </div>
                 <div>
                   <h3 className="text-xl font-bold font-serif text-[var(--foreground)]">
-                    ✎ Record Transaction
+                    ✎ Astra Quick-Add
                   </h3>
-                  <p className="text-xs font-serif text-[var(--muted)]">Add instant sketch cashflow entries to your ledger</p>
+                  <p className="text-xs font-serif text-[var(--muted)]">Add instant sketch cashflow entries to your Astra Ledger</p>
                 </div>
               </div>
 
